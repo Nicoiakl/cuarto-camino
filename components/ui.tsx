@@ -6,19 +6,36 @@ import {
   TextInput,
   View,
   type TextInputProps,
+  type StyleProp,
+  type TextStyle,
   type ViewStyle,
 } from 'react-native';
 import Animated, {
+  Easing,
   FadeInDown,
+  interpolate,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withSequence,
+  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import { colors, fonts, gradients, motion, radii, spacing } from '@/constants/theme';
+import {
+  colors,
+  fonts,
+  gradients,
+  motion,
+  radii,
+  shadows,
+  spacing,
+  type,
+} from '@/constants/theme';
+
+const easeOut = Easing.out(Easing.cubic);
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 function Atmosphere({ mode }: { mode: 'day' | 'session' }) {
   if (mode === 'session') {
@@ -26,15 +43,16 @@ function Atmosphere({ mode }: { mode: 'day' | 'session' }) {
       <>
         <LinearGradient
           colors={[...gradients.session]}
-          locations={[0, 0.55, 1]}
+          locations={[0, 0.52, 1]}
           style={StyleSheet.absoluteFill}
         />
         <LinearGradient
-          colors={['rgba(181,154,91,0.12)', 'transparent']}
-          start={{ x: 0.15, y: 0 }}
-          end={{ x: 0.9, y: 0.7 }}
+          colors={[...gradients.sessionSheen]}
+          start={{ x: 0.1, y: 0 }}
+          end={{ x: 0.85, y: 0.65 }}
           style={StyleSheet.absoluteFill}
         />
+        <View style={styles.sessionVignette} />
       </>
     );
   }
@@ -43,17 +61,18 @@ function Atmosphere({ mode }: { mode: 'day' | 'session' }) {
     <>
       <LinearGradient
         colors={[...gradients.screen]}
-        locations={[0, 0.5, 1]}
+        locations={[0, 0.48, 1]}
         style={StyleSheet.absoluteFill}
       />
       <LinearGradient
         colors={[...gradients.screenWarmEdge]}
         start={{ x: 1, y: 0 }}
-        end={{ x: 0.2, y: 0.55 }}
+        end={{ x: 0.15, y: 0.6 }}
         style={StyleSheet.absoluteFill}
       />
       <View style={styles.grainA} />
       <View style={styles.grainB} />
+      <View style={styles.grainC} />
     </>
   );
 }
@@ -91,12 +110,20 @@ export function BrandMark({
 }) {
   return (
     <View style={styles.brandWrap}>
-      <Text style={[styles.brand, large && styles.brandLarge, light && { color: colors.white }]}>
+      <Text
+        style={[
+          styles.brand,
+          large && styles.brandLarge,
+          light && { color: colors.white },
+        ]}>
         The Work
       </Text>
-      <View style={[styles.brandRule, light && { backgroundColor: colors.accentHot }]} />
+      <View style={styles.brandRuleRow}>
+        <View style={[styles.brandRule, light && { backgroundColor: colors.accentHot }]} />
+        <View style={[styles.brandRuleTail, light && { backgroundColor: 'rgba(233,216,168,0.35)' }]} />
+      </View>
       {subtitle ? (
-        <Text style={[styles.brandSub, light && { color: 'rgba(246,247,244,0.72)' }]}>
+        <Text style={[styles.brandSub, light && { color: colors.whiteMuted }]}>
           {subtitle}
         </Text>
       ) : null}
@@ -107,12 +134,16 @@ export function BrandMark({
 export function Headline({
   children,
   light,
+  style,
 }: {
   children: React.ReactNode;
   light?: boolean;
+  style?: StyleProp<TextStyle>;
 }) {
   return (
-    <Text style={[styles.headline, light && { color: colors.white }]}>{children}</Text>
+    <Text style={[styles.headline, light && { color: colors.white }, style]}>
+      {children}
+    </Text>
   );
 }
 
@@ -125,18 +156,41 @@ export function Body({
   children: React.ReactNode;
   muted?: boolean;
   light?: boolean;
-  style?: object;
+  style?: StyleProp<TextStyle>;
 }) {
   return (
     <Text
       style={[
         styles.body,
         muted && styles.muted,
-        light && { color: 'rgba(246,247,244,0.78)' },
+        light && { color: colors.whiteMuted },
         style,
       ]}>
       {children}
     </Text>
+  );
+}
+
+export function Kicker({
+  children,
+  light,
+}: {
+  children: React.ReactNode;
+  light?: boolean;
+}) {
+  return (
+    <Text style={[styles.kicker, light && { color: colors.accentHot }]}>{children}</Text>
+  );
+}
+
+export function Hairline({ light }: { light?: boolean }) {
+  return (
+    <View
+      style={[
+        styles.hairline,
+        light && { backgroundColor: 'rgba(248,249,246,0.14)' },
+      ]}
+    />
   );
 }
 
@@ -151,12 +205,27 @@ export function Section({
 }) {
   return (
     <Animated.View
-      entering={FadeInDown.delay(delay).duration(motion.enter)}
+      entering={FadeInDown.delay(delay)
+        .duration(motion.enter)
+        .easing(easeOut)}
       style={styles.section}>
-      {title ? <Text style={styles.sectionTitle}>{title}</Text> : null}
+      {title ? (
+        <View style={styles.sectionHead}>
+          <Text style={styles.sectionTitle}>{title}</Text>
+          <View style={styles.sectionRule} />
+        </View>
+      ) : null}
       {children}
     </Animated.View>
   );
+}
+
+async function tap() {
+  try {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  } catch {
+    /* web / simulator */
+  }
 }
 
 export function Button({
@@ -170,38 +239,74 @@ export function Button({
   variant?: 'primary' | 'ghost' | 'gold' | 'session' | 'lumen';
   disabled?: boolean;
 }) {
+  const press = useSharedValue(0);
+  const gradient =
+    variant === 'lumen' || variant === 'session'
+      ? gradients.lumenBtn
+      : variant === 'gold'
+        ? gradients.goldBtn
+        : variant === 'primary'
+          ? gradients.primaryBtn
+          : null;
+
+  const animStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: interpolate(press.value, [0, 1], [1, 0.975]) }],
+    opacity: interpolate(press.value, [0, 1], [1, 0.94]),
+  }));
+
+  const labelColor =
+    variant === 'ghost'
+      ? colors.focus
+      : variant === 'primary'
+        ? colors.white
+        : colors.ink;
+
+  const shadowStyle =
+    variant === 'lumen' || variant === 'session'
+      ? shadows.gold
+      : variant === 'primary'
+        ? shadows.ink
+        : variant === 'gold'
+          ? shadows.soft
+          : shadows.none;
+
   return (
-    <Pressable
+    <AnimatedPressable
       disabled={disabled}
+      onPressIn={() => {
+        press.value = withTiming(1, { duration: motion.press });
+      }}
+      onPressOut={() => {
+        press.value = withSpring(0, motion.spring);
+      }}
       onPress={async () => {
-        try {
-          await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        } catch {
-          /* web */
-        }
+        await tap();
         onPress();
       }}
-      style={({ pressed }) => [
-        styles.btn,
-        variant === 'primary' && styles.btnPrimary,
-        variant === 'ghost' && styles.btnGhost,
-        variant === 'gold' && styles.btnGold,
-        variant === 'session' && styles.btnSession,
-        variant === 'lumen' && styles.btnLumen,
-        pressed && { opacity: 0.88, transform: [{ scale: 0.987 }] },
-        disabled && { opacity: 0.4 },
+      style={[
+        animStyle,
+        styles.btnShell,
+        shadowStyle,
+        variant === 'ghost' && styles.btnGhostShell,
+        disabled && { opacity: 0.38, shadowOpacity: 0, elevation: 0 },
       ]}>
-      <Text
-        style={[
-          styles.btnLabel,
-          variant === 'ghost' && { color: colors.focus },
-          variant === 'gold' && { color: colors.ink },
-          variant === 'session' && { color: colors.session },
-          variant === 'lumen' && { color: colors.ink },
-        ]}>
-        {label}
-      </Text>
-    </Pressable>
+      <View style={styles.btnClip}>
+        {gradient ? (
+          <LinearGradient
+            colors={[...gradient]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.btnFill}>
+            <View style={styles.btnHighlight} />
+            <Text style={[styles.btnLabel, { color: labelColor }]}>{label}</Text>
+          </LinearGradient>
+        ) : (
+          <View style={[styles.btnFill, styles.btnGhostFill]}>
+            <Text style={[styles.btnLabel, { color: labelColor }]}>{label}</Text>
+          </View>
+        )}
+      </View>
+    </AnimatedPressable>
   );
 }
 
@@ -210,7 +315,7 @@ export function Field(props: TextInputProps) {
     <TextInput
       placeholderTextColor={colors.muted}
       {...props}
-      style={[styles.field, props.style]}
+      style={[styles.field, shadows.soft, props.style]}
     />
   );
 }
@@ -227,37 +332,61 @@ export function Chip({
   tone?: 'day' | 'session';
 }) {
   const session = tone === 'session';
+  const press = useSharedValue(0);
+  const animStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: interpolate(press.value, [0, 1], [1, 0.97]) }],
+  }));
+
   return (
-    <Pressable
-      onPress={onPress}
+    <AnimatedPressable
+      onPressIn={() => {
+        press.value = withTiming(1, { duration: 120 });
+      }}
+      onPressOut={() => {
+        press.value = withSpring(0, motion.spring);
+      }}
+      onPress={async () => {
+        await tap();
+        onPress?.();
+      }}
       style={[
+        animStyle,
         styles.chip,
         session && styles.chipSession,
         selected && (session ? styles.chipSessionSelected : styles.chipSelected),
+        selected && (session ? shadows.gold : shadows.soft),
       ]}>
       <Text
         style={[
           styles.chipLabel,
-          session && { color: 'rgba(246,247,244,0.82)' },
+          session && { color: colors.whiteMuted },
           selected && styles.chipLabelSelected,
-          selected && session && { color: colors.session },
+          selected && session && { color: colors.ink },
         ]}>
         {label}
       </Text>
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 
 export function PresencePulse({ active }: { active: boolean }) {
   const scale = useSharedValue(1);
-  const opacity = useSharedValue(0.22);
+  const opacity = useSharedValue(0.18);
 
   useEffect(() => {
     if (!active) {
       opacity.value = withRepeat(
         withSequence(
-          withTiming(0.28, { duration: 1600 }),
-          withTiming(0.14, { duration: 1600 }),
+          withTiming(0.26, { duration: 1800, easing: easeOut }),
+          withTiming(0.12, { duration: 1800, easing: easeOut }),
+        ),
+        -1,
+        true,
+      );
+      scale.value = withRepeat(
+        withSequence(
+          withTiming(1.04, { duration: 1800, easing: easeOut }),
+          withTiming(0.96, { duration: 1800, easing: easeOut }),
         ),
         -1,
         true,
@@ -265,12 +394,12 @@ export function PresencePulse({ active }: { active: boolean }) {
       return;
     }
     scale.value = withSequence(
-      withTiming(1.12, { duration: 700 }),
-      withTiming(1, { duration: 900 }),
+      withTiming(1.14, { duration: 780, easing: easeOut }),
+      withTiming(1, { duration: 980, easing: easeOut }),
     );
     opacity.value = withSequence(
-      withTiming(0.55, { duration: 700 }),
-      withTiming(0.18, { duration: 900 }),
+      withTiming(0.48, { duration: 780, easing: easeOut }),
+      withTiming(0.16, { duration: 980, easing: easeOut }),
     );
   }, [active, opacity, scale]);
 
@@ -293,130 +422,189 @@ const styles = StyleSheet.create({
   },
   grainA: {
     position: 'absolute',
-    top: -40,
-    right: -30,
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    backgroundColor: 'rgba(181, 154, 91, 0.07)',
+    top: -50,
+    right: -40,
+    width: 240,
+    height: 240,
+    borderRadius: 120,
+    backgroundColor: 'rgba(194, 166, 104, 0.08)',
   },
   grainB: {
     position: 'absolute',
-    bottom: 120,
-    left: -60,
-    width: 260,
-    height: 260,
-    borderRadius: 130,
-    backgroundColor: 'rgba(28, 61, 54, 0.05)',
+    bottom: 100,
+    left: -70,
+    width: 280,
+    height: 280,
+    borderRadius: 140,
+    backgroundColor: 'rgba(20, 53, 47, 0.045)',
+  },
+  grainC: {
+    position: 'absolute',
+    top: '42%',
+    right: '18%',
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: 'rgba(248, 249, 246, 0.35)',
+  },
+  sessionVignette: {
+    ...StyleSheet.absoluteFillObject,
+    borderWidth: 0,
+    backgroundColor: 'transparent',
+    shadowColor: '#000',
+    shadowOpacity: 0.45,
+    shadowRadius: 40,
   },
   brandWrap: {
-    gap: 10,
-    marginBottom: spacing.sm,
+    gap: 12,
+    marginBottom: spacing.xs,
   },
   brand: {
     fontFamily: fonts.display,
-    fontSize: 48,
-    lineHeight: 50,
+    fontSize: type.brand.size,
+    lineHeight: type.brand.line,
+    letterSpacing: type.brand.tracking,
     color: colors.ink,
-    letterSpacing: 0.2,
   },
   brandLarge: {
-    fontSize: 56,
-    lineHeight: 58,
+    fontSize: type.brandLg.size,
+    lineHeight: type.brandLg.line,
+    letterSpacing: type.brandLg.tracking,
+  },
+  brandRuleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
   },
   brandRule: {
-    width: 36,
-    height: 2,
+    width: 28,
+    height: 1.5,
     backgroundColor: colors.accent,
+    borderRadius: 1,
+  },
+  brandRuleTail: {
+    width: 10,
+    height: 1.5,
+    backgroundColor: 'rgba(194,166,104,0.35)',
     borderRadius: 1,
   },
   brandSub: {
     fontFamily: fonts.bodyItalic,
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 15.5,
+    lineHeight: 24,
     color: colors.muted,
-    maxWidth: 280,
+    maxWidth: 300,
   },
   headline: {
     fontFamily: fonts.display,
-    fontSize: 34,
-    lineHeight: 38,
+    fontSize: type.display.size,
+    lineHeight: type.display.line,
+    letterSpacing: type.display.tracking,
     color: colors.ink,
-    marginBottom: spacing.sm,
+    marginBottom: spacing.xs,
   },
   body: {
     fontFamily: fonts.body,
-    fontSize: 16,
-    lineHeight: 26,
+    fontSize: type.body.size,
+    lineHeight: type.body.line,
     color: colors.inkSoft,
   },
   muted: {
     color: colors.muted,
   },
+  kicker: {
+    fontFamily: fonts.uiMedium,
+    fontSize: type.label.size,
+    lineHeight: type.label.line,
+    letterSpacing: type.label.tracking,
+    textTransform: 'uppercase',
+    color: colors.focusSoft,
+  },
+  hairline: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.lineHair,
+    marginVertical: spacing.md,
+  },
   section: {
-    marginBottom: spacing.xl,
+    marginBottom: spacing.xxl,
     gap: spacing.sm,
+  },
+  sectionHead: {
+    marginBottom: spacing.xxs,
+    gap: 8,
   },
   sectionTitle: {
     fontFamily: fonts.uiMedium,
-    fontSize: 11,
-    letterSpacing: 1.8,
+    fontSize: type.label.size,
+    lineHeight: type.label.line,
+    letterSpacing: type.label.tracking,
     textTransform: 'uppercase',
     color: colors.focusSoft,
-    marginBottom: 2,
   },
-  btn: {
+  sectionRule: {
+    width: 22,
+    height: 1,
+    backgroundColor: colors.accent,
+    opacity: 0.7,
+  },
+  btnShell: {
     borderRadius: radii.md,
-    paddingVertical: 15,
-    paddingHorizontal: 18,
-    alignItems: 'center',
   },
-  btnPrimary: {
-    backgroundColor: colors.focus,
+  btnClip: {
+    borderRadius: radii.md,
+    overflow: 'hidden',
   },
-  btnGhost: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
+  btnGhostShell: {
+    borderWidth: StyleSheet.hairlineWidth * 2,
     borderColor: colors.line,
+    backgroundColor: 'rgba(251,252,250,0.55)',
   },
-  btnGold: {
-    backgroundColor: colors.accentSoft,
+  btnFill: {
+    minHeight: 54,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  btnSession: {
-    backgroundColor: colors.accentHot,
+  btnGhostFill: {
+    backgroundColor: 'transparent',
   },
-  btnLumen: {
-    backgroundColor: colors.accentHot,
+  btnHighlight: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.35)',
   },
   btnLabel: {
-    fontFamily: fonts.uiMedium,
-    fontSize: 16,
-    letterSpacing: 0.2,
-    color: colors.white,
+    fontFamily: fonts.uiSemi,
+    fontSize: 15.5,
+    letterSpacing: 0.45,
   },
   field: {
     backgroundColor: colors.surfaceRaised,
-    borderWidth: 1,
+    borderWidth: StyleSheet.hairlineWidth * 2,
     borderColor: colors.lineSoft,
     borderRadius: radii.md,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
     fontFamily: fonts.body,
-    fontSize: 16,
+    fontSize: 16.5,
     color: colors.ink,
-    minHeight: 48,
+    minHeight: 52,
   },
   chip: {
-    borderWidth: 1,
+    borderWidth: StyleSheet.hairlineWidth * 2,
     borderColor: colors.line,
     backgroundColor: colors.surfaceRaised,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: radii.md,
+    paddingHorizontal: 15,
+    paddingVertical: 11,
+    borderRadius: radii.sm,
   },
   chipSession: {
-    borderColor: 'rgba(246,247,244,0.16)',
-    backgroundColor: 'rgba(246,247,244,0.05)',
+    borderColor: 'rgba(248,249,246,0.16)',
+    backgroundColor: 'rgba(248,249,246,0.045)',
   },
   chipSelected: {
     backgroundColor: colors.focus,
@@ -428,7 +616,8 @@ const styles = StyleSheet.create({
   },
   chipLabel: {
     fontFamily: fonts.uiMedium,
-    fontSize: 14,
+    fontSize: 13.5,
+    letterSpacing: 0.2,
     color: colors.inkSoft,
   },
   chipLabelSelected: {
@@ -436,15 +625,15 @@ const styles = StyleSheet.create({
   },
   pulse: {
     position: 'absolute',
-    width: 220,
-    height: 220,
-    borderRadius: 110,
+    width: 240,
+    height: 240,
+    borderRadius: 120,
     backgroundColor: colors.accentHot,
   },
   empty: {
     fontFamily: fonts.bodyItalic,
-    fontSize: 15,
+    fontSize: 15.5,
     color: colors.muted,
-    lineHeight: 22,
+    lineHeight: 24,
   },
 });

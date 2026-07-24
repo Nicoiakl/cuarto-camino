@@ -85,9 +85,12 @@ function RootStack() {
         headerTintColor: colors.focus,
         headerTitleStyle: {
           fontFamily: fonts.uiMedium,
+          fontSize: 16,
           color: colors.ink,
         },
+        headerShadowVisible: false,
         contentStyle: { backgroundColor: colors.bg },
+        animation: 'fade_from_bottom',
       }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="revision" options={{ title: t('screens.revision') }} />

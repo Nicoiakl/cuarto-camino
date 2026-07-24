@@ -9,18 +9,47 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  FadeIn,
+  FadeInUp,
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { setStatusBarStyle } from 'expo-status-bar';
+import * as Haptics from 'expo-haptics';
 import { useTranslation } from 'react-i18next';
-import { Body, BrandMark, Button, PresencePulse, Screen, Section } from '@/components/ui';
-import { colors, fonts, gradients, motion, radii, spacing } from '@/constants/theme';
+import {
+  Body,
+  BrandMark,
+  Button,
+  Hairline,
+  PresencePulse,
+  Screen,
+  Section,
+} from '@/components/ui';
+import {
+  colors,
+  fonts,
+  gradients,
+  motion,
+  radii,
+  shadows,
+  spacing,
+  type,
+} from '@/constants/theme';
 import { useWork } from '@/context/WorkContext';
 import { todayKey } from '@/lib/dates';
 import { practiceOfDay } from '@/lib/practice';
 import { quoteOfDay, quoteSource, quoteText } from '@/lib/quotes';
 
 const { height: SCREEN_H } = Dimensions.get('window');
+const easeOut = Easing.out(Easing.cubic);
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export default function HoyScreen() {
   const insets = useSafeAreaInsets();
@@ -36,6 +65,11 @@ export default function HoyScreen() {
     );
   }, [analytics]);
 
+  const ctaPress = useSharedValue(0);
+  const ctaStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: interpolate(ctaPress.value, [0, 1], [1, 0.978]) }],
+  }));
+
   useEffect(() => {
     track('screen_hoy');
   }, [track]);
@@ -45,37 +79,42 @@ export default function HoyScreen() {
     return () => setStatusBarStyle('dark');
   }, []);
 
-  const heroMin = Math.max(520, SCREEN_H * 0.78);
+  const heroMin = Math.max(560, SCREEN_H * 0.82);
 
   return (
     <Screen>
       <ScrollView
-        contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 48 }}
         showsVerticalScrollIndicator={false}>
-        {/* First viewport: one composition */}
-        <View style={[styles.heroViewport, { minHeight: heroMin, paddingTop: insets.top + 18 }]}>
+        <View
+          style={[
+            styles.heroViewport,
+            { minHeight: heroMin, paddingTop: insets.top + 22 },
+          ]}>
           <LinearGradient
             colors={[...gradients.hero]}
-            locations={[0, 0.55, 1]}
+            locations={[0, 0.52, 1]}
             style={StyleSheet.absoluteFill}
           />
           <LinearGradient
             colors={[...gradients.heroSheen]}
-            start={{ x: 0.2, y: 0 }}
-            end={{ x: 0.9, y: 0.8 }}
+            locations={[0, 0.45, 1]}
+            start={{ x: 0.15, y: 0 }}
+            end={{ x: 0.95, y: 0.85 }}
             style={StyleSheet.absoluteFill}
           />
+          <View style={styles.heroMist} />
           <View style={styles.heroOrbWrap} pointerEvents="none">
             <PresencePulse active={false} />
           </View>
 
           <Animated.View
-            entering={FadeIn.duration(motion.slow)}
+            entering={FadeIn.duration(motion.slow).easing(easeOut)}
             style={styles.heroInner}>
             <BrandMark large light subtitle={t('brand.subtitle')} />
 
             <Animated.View
-              entering={FadeInUp.delay(160).duration(motion.enter)}
+              entering={FadeInUp.delay(180).duration(motion.enter).easing(easeOut)}
               style={styles.heroCopy}>
               <Text style={styles.heroKicker}>
                 {practicedToday
@@ -88,31 +127,54 @@ export default function HoyScreen() {
               <Text style={styles.heroBody}>
                 {t(`practice.summaries.${practice.kind}`)}
               </Text>
-              <Text style={styles.heroMeta}>
-                {t('home.practiceMeta', { minutes: practice.minutes })}
-              </Text>
+              <View style={styles.metaRow}>
+                <View style={styles.metaDot} />
+                <Text style={styles.heroMeta}>
+                  {t('home.practiceMeta', { minutes: practice.minutes })}
+                </Text>
+              </View>
             </Animated.View>
 
-            <Animated.View entering={FadeInUp.delay(280).duration(motion.enter)}>
-              <Pressable
-                onPress={() => {
+            <Animated.View
+              entering={FadeInUp.delay(320).duration(motion.enter).easing(easeOut)}>
+              <AnimatedPressable
+                onPressIn={() => {
+                  ctaPress.value = withTiming(1, { duration: motion.press });
+                }}
+                onPressOut={() => {
+                  ctaPress.value = withSpring(0, motion.spring);
+                }}
+                onPress={async () => {
+                  try {
+                    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                  } catch {
+                    /* web */
+                  }
                   track('home_start_practice', { kind: practice.kind });
                   router.push('/practica');
                 }}
-                style={({ pressed }) => [
-                  styles.heroCta,
-                  pressed && { transform: [{ scale: 0.985 }], opacity: 0.93 },
-                ]}>
-                <Text style={styles.heroCtaText}>
-                  {practicedToday ? t('home.practiceAgain') : t('home.practiceStart')}
-                </Text>
-              </Pressable>
+                style={[ctaStyle, styles.heroCtaShell, shadows.gold]}>
+                <View style={styles.heroCtaClip}>
+                  <LinearGradient
+                    colors={[...gradients.lumenBtn]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.heroCta}>
+                    <View style={styles.ctaHighlight} />
+                    <Text style={styles.heroCtaText}>
+                      {practicedToday
+                        ? t('home.practiceAgain')
+                        : t('home.practiceStart')}
+                    </Text>
+                  </LinearGradient>
+                </View>
+              </AnimatedPressable>
             </Animated.View>
           </Animated.View>
         </View>
 
         <View style={styles.below}>
-          <Section title={t('home.aimToday')} delay={80}>
+          <Section title={t('home.aimToday')} delay={60}>
             {todayAim?.text ? (
               <Text style={styles.aimText}>{todayAim.text}</Text>
             ) : (
@@ -125,12 +187,16 @@ export default function HoyScreen() {
             />
           </Section>
 
-          <Section title={t('home.quoteOfDay')} delay={140}>
+          <Hairline />
+
+          <Section title={t('home.quoteOfDay')} delay={120}>
             <Text style={styles.quote}>“{quoteText(quote.id)}”</Text>
-            <Body muted>{quoteSource()}</Body>
+            <Text style={styles.quoteSource}>{quoteSource()}</Text>
           </Section>
 
-          <Section title={t('home.dayClose')} delay={200}>
+          <Hairline />
+
+          <Section title={t('home.dayClose')} delay={180}>
             <Body muted>
               {todayReview ? t('home.reviewExists') : t('home.reviewPrompt')}
             </Body>
@@ -156,70 +222,108 @@ export default function HoyScreen() {
 const styles = StyleSheet.create({
   heroViewport: {
     paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.xxl,
+    paddingBottom: spacing.xxxl,
     justifyContent: 'space-between',
     overflow: 'hidden',
   },
+  heroMist: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 120,
+    backgroundColor: 'transparent',
+    borderBottomWidth: 0,
+    opacity: 1,
+  },
   heroOrbWrap: {
     position: 'absolute',
-    right: -40,
-    top: '28%',
-    width: 210,
-    height: 210,
+    right: -48,
+    top: '26%',
+    width: 240,
+    height: 240,
     alignItems: 'center',
     justifyContent: 'center',
-    opacity: 0.9,
+    opacity: 0.85,
   },
   heroInner: {
     flex: 1,
     justifyContent: 'space-between',
-    paddingBottom: spacing.md,
+    paddingBottom: spacing.sm,
   },
   heroCopy: {
-    gap: 10,
-    marginTop: spacing.xxl,
+    gap: 12,
+    marginTop: spacing.xxxl,
     marginBottom: spacing.xl,
   },
   heroKicker: {
     fontFamily: fonts.uiMedium,
-    fontSize: 11,
-    letterSpacing: 2.2,
+    fontSize: type.label.size,
+    lineHeight: type.label.line,
+    letterSpacing: type.label.tracking,
     textTransform: 'uppercase',
     color: colors.accentHot,
   },
   heroTitle: {
     fontFamily: fonts.display,
-    fontSize: 44,
-    lineHeight: 48,
+    fontSize: 46,
+    lineHeight: 50,
     color: colors.white,
-    letterSpacing: 0.2,
+    letterSpacing: 0.15,
   },
   heroBody: {
     fontFamily: fonts.body,
-    fontSize: 17,
-    lineHeight: 27,
-    color: 'rgba(246,247,244,0.82)',
-    maxWidth: 320,
-    marginTop: 4,
+    fontSize: 17.5,
+    lineHeight: 28,
+    color: colors.whiteMuted,
+    maxWidth: 318,
+    marginTop: 2,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 8,
+  },
+  metaDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: colors.accentSoft,
+    opacity: 0.8,
   },
   heroMeta: {
     fontFamily: fonts.ui,
-    fontSize: 13,
-    letterSpacing: 0.3,
-    color: 'rgba(246,247,244,0.55)',
-    marginTop: 6,
+    fontSize: type.meta.size,
+    letterSpacing: type.meta.tracking,
+    color: colors.whiteSoft,
+  },
+  heroCtaShell: {
+    borderRadius: radii.md,
+  },
+  heroCtaClip: {
+    borderRadius: radii.md,
+    overflow: 'hidden',
   },
   heroCta: {
     alignSelf: 'stretch',
-    backgroundColor: colors.accentHot,
-    borderRadius: radii.md,
+    minHeight: 58,
     paddingVertical: 18,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ctaHighlight: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.42)',
   },
   heroCtaText: {
-    fontFamily: fonts.uiBold,
+    fontFamily: fonts.uiSemi,
     fontSize: 16,
-    letterSpacing: 0.4,
+    letterSpacing: 0.55,
     color: colors.ink,
   },
   below: {
@@ -228,17 +332,27 @@ const styles = StyleSheet.create({
   },
   aimText: {
     fontFamily: fonts.displayItalic,
-    fontSize: 26,
-    lineHeight: 34,
+    fontSize: 28,
+    lineHeight: 36,
     color: colors.ink,
+    letterSpacing: 0.1,
   },
   quote: {
     fontFamily: fonts.displayItalic,
-    fontSize: 24,
-    lineHeight: 34,
+    fontSize: 26,
+    lineHeight: 36,
     color: colors.ink,
+    letterSpacing: 0.05,
+  },
+  quoteSource: {
+    fontFamily: fonts.ui,
+    fontSize: type.meta.size,
+    letterSpacing: type.meta.tracking,
+    color: colors.muted,
+    marginTop: 4,
   },
   rowActions: {
-    gap: 10,
+    gap: 12,
+    marginTop: 4,
   },
 });
