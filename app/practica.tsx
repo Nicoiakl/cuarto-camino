@@ -11,7 +11,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import { StatusBar } from 'expo-status-bar';
+import { setStatusBarStyle } from 'expo-status-bar';
 import * as Haptics from 'expo-haptics';
 import { useTranslation } from 'react-i18next';
 import { Body, BrandMark, Button, Chip, Headline, PresencePulse, Screen } from '@/components/ui';
@@ -89,6 +89,11 @@ export default function PracticaScreen() {
     track('screen_practica', { kind: practice.kind });
   }, [track, practice.kind]);
 
+  useEffect(() => {
+    setStatusBarStyle('light');
+    return () => setStatusBarStyle('dark');
+  }, []);
+
   const current = practice.steps[step];
   const progress = (step + 1) / practice.steps.length;
 
@@ -139,7 +144,6 @@ export default function PracticaScreen() {
 
   return (
     <Screen mode="session">
-      <StatusBar style="light" />
       <View style={styles.orbWrap} pointerEvents="none">
         <PresencePulse active={phase === 'guide'} />
       </View>

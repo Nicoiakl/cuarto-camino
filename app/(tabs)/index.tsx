@@ -11,7 +11,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { StatusBar } from 'expo-status-bar';
+import { setStatusBarStyle } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Body, BrandMark, Button, PresencePulse, Screen, Section } from '@/components/ui';
 import { colors, fonts, gradients, motion, radii, spacing } from '@/constants/theme';
@@ -40,11 +40,15 @@ export default function HoyScreen() {
     track('screen_hoy');
   }, [track]);
 
+  useEffect(() => {
+    setStatusBarStyle('light');
+    return () => setStatusBarStyle('dark');
+  }, []);
+
   const heroMin = Math.max(520, SCREEN_H * 0.78);
 
   return (
     <Screen>
-      <StatusBar style="light" />
       <ScrollView
         contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
         showsVerticalScrollIndicator={false}>
