@@ -19,6 +19,17 @@ Los datos viven en el dispositivo (`AsyncStorage`). Sin cuenta ni nube.
 Inglés, español, francés, portugués, alemán e italiano.  
 Se detecta el idioma del dispositivo y se puede cambiar en **Más → Idioma**.
 
+## Estudio interactivo
+
+En **Más → Estudio** hay una guía conversacional con el corpus del Cuarto Camino:
+
+- Conversar / pasaje del día / desde tu observación
+- Búsqueda local en los textos (índice en el dispositivo)
+- Opcional: API key de **Anthropic** en Estudio → Ajustes (queda en el teléfono)
+
+Los PDF originales y `assets/corpus/chunks.json` no van al repo (uso personal).  
+Para regenerar el índice: coloca textos en `private/corpus/` y ejecuta `node scripts/build-corpus.mjs`.
+
 ## Arranque
 
 ```bash

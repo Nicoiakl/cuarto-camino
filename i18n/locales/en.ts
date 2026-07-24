@@ -10,6 +10,9 @@ const en = {
     revision: 'Evening review',
     quotes: 'Quotes from the Work',
     usage: 'Usage',
+    study: 'Study',
+    studyChat: 'Study conversation',
+    studySettings: 'Study settings',
     notFound: 'Not found',
   },
   brand: {
@@ -123,6 +126,81 @@ const en = {
     localNote: 'Everything stays on this device. No account or cloud in this first version.',
     language: 'Language',
     languageHint: 'The app follows your device language, or the one you choose here.',
+    studyTitle: 'Study',
+    studyDesc: 'Interactive guide with your Fourth Way library.',
+  },
+  study: {
+    hubTitle: 'Interactive study',
+    hubIntro:
+      'A living companion for the teaching: converse, take a daily passage, or deepen an observation with the corpus on this device.',
+    enter: 'Enter',
+    aiReady: 'Anthropic connected — answers use your key and local passages.',
+    aiLocal:
+      'Local guide active. Add an Anthropic API key for richer dialogue with the texts.',
+    chatTitle: 'Converse',
+    chatDesc: 'Ask, verify, explore an idea of the Work.',
+    dailyTitle: 'Daily passage',
+    dailyDesc: 'A fragment and living questions for today.',
+    fromObsTitle: 'From your observation',
+    fromObsDesc: 'Bring what you saw; look without fixing too soon.',
+    settingsTitle: 'Settings',
+    settingsDesc: 'Anthropic API key and privacy.',
+    settingsIntro:
+      'Your PDFs feed a private index on this device. Optionally connect Anthropic for a deeper guide.',
+    keyHint:
+      'Personal use: the key stays in secure storage on this device and is sent only to Anthropic when you ask.',
+    saveKey: 'Save key',
+    clearKey: 'Remove key',
+    keySaved: 'Saved.',
+    privacyTitle: 'Privacy & copyright',
+    privacyBody:
+      'Book texts stay on your device for personal study. They are not uploaded to our servers. Use only editions you have the right to study from.',
+    modeHint: {
+      chat: 'Speak as a student of the Work. Prefer concrete moments over theories.',
+      daily: 'Today’s passage appears as a mirror. Verify it in life.',
+      fromObservation: 'Paste or refine an observation. We will look, not lecture.',
+    },
+    emptyTitle: 'Where shall we look?',
+    emptyBody: 'Choose a suggestion or write your question.',
+    sug1: 'What is self-remembering in practice, not in theory?',
+    sug2: 'How do I see identification without fighting it?',
+    sug3: 'Help me form a small aim for today.',
+    placeholder: 'Write a question or a moment from today…',
+    send: 'Send',
+    thinking: 'Listening…',
+    sources: 'Passages',
+    promptDaily: 'Offer today’s study passage and three living questions to verify it.',
+    promptFromObsEmpty: 'I have not logged an observation yet. Help me begin seeing one “I” today.',
+    errKey: 'Invalid Anthropic API key. Check it in Study settings.',
+    errGeneric: 'Could not complete the request. Try again in a moment.',
+    local: {
+      dailyLead: 'Passage to verify today:',
+      dailyQ: 'Living questions:',
+      dailyQ1: '1) Where do you recognize this in the last 24 hours?',
+      dailyQ2: '2) Which center was active when it happened?',
+      dailyQ3: '3) Was there a second of separation, or only the stream?',
+      obsLead: 'Thank you for bringing what was seen. Without correcting yet:',
+      obsLabel: 'Observation',
+      nearby: 'Nearby passage from the corpus:',
+      obsTry: 'Try this now (2 minutes):',
+      obs1: '• Name the “I” that was speaking (the justifier, the hurt one, the efficient one…).',
+      obs2: '• Locate the dominant center: intellectual, emotional, moving/instinctive.',
+      obs3: '• Ask: was I identified, or was there a little free attention?',
+      hingeDefault:
+        'Return for a second to the body and ask: am I here, or am I only the narration?',
+      hingeAim:
+        'Make the aim small and verifiable today. At which exact moment will you remember it?',
+      hingeEmotion:
+        'Before changing the emotion, see it as energy. Where is it in the body?',
+      hingeRemember:
+        'A stop now: posture, breath, peripheral vision. Who is looking?',
+      hingeCenter:
+        'Choose one center and observe it for 10 minutes without intervening. Inventory only.',
+      fromCorpus: 'From the study corpus:',
+      invite: 'If you wish, tell me a concrete moment from today (not a theory) and we will look together.',
+      footer:
+        '— Local guide (no cloud AI). For richer answers, add your Anthropic API key in Study → Settings.',
+    },
   },
   revision: {
     look: 'Look at the day',

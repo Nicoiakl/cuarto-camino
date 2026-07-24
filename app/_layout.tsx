@@ -80,6 +80,12 @@ function RootStack() {
       <Stack.Screen name="revision" options={{ title: t('screens.revision') }} />
       <Stack.Screen name="citas" options={{ title: t('screens.quotes') }} />
       <Stack.Screen name="uso" options={{ title: t('screens.usage') }} />
+      <Stack.Screen name="estudio" options={{ title: t('screens.study') }} />
+      <Stack.Screen name="estudio-chat" options={{ title: t('screens.studyChat') }} />
+      <Stack.Screen
+        name="estudio-settings"
+        options={{ title: t('screens.studySettings') }}
+      />
     </Stack>
   );
 }

@@ -33,6 +33,10 @@ yarn-error.*
 # local env files
 .env*.local
 
+# Copyrighted source texts & generated RAG corpus (personal study only)
+/private/
+/assets/corpus/
+
 # typescript
 *.tsbuildinfo
 
