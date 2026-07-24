@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Body, Screen, Section } from '@/components/ui';
+import { Body, Button, Screen, Section } from '@/components/ui';
 import { colors, fonts, radii, spacing } from '@/constants/theme';
+import { usePremium } from '@/context/PremiumContext';
 import { useWork } from '@/context/WorkContext';
 import { corpusSummary } from '@/lib/study/corpus';
 import { getAnthropicKey } from '@/lib/study/settings';
@@ -12,6 +13,7 @@ export default function EstudioHubScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { track } = useWork();
+  const { isPremium } = usePremium();
   const [hasKey, setHasKey] = useState(false);
 
   useEffect(() => {
@@ -49,8 +51,19 @@ export default function EstudioHubScreen() {
           <Body>{t('study.hubIntro')}</Body>
           <Text style={styles.corpus}>{corpusSummary()}</Text>
           <Body muted>
-            {hasKey ? t('study.aiReady') : t('study.aiLocal')}
+            {!isPremium
+              ? t('study.aiNeedsPremium')
+              : hasKey
+                ? t('study.aiReady')
+                : t('study.aiLocal')}
           </Body>
+          {!isPremium ? (
+            <Button
+              label={t('study.seePremium')}
+              variant="gold"
+              onPress={() => router.push('/premium')}
+            />
+          ) : null}
         </Section>
 
         <Section title={t('study.enter')}>

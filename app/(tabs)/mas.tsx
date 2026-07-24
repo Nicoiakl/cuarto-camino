@@ -19,6 +19,11 @@ export default function MasScreen() {
 
   const links = [
     {
+      href: '/premium' as const,
+      title: t('more.premiumTitle'),
+      desc: t('more.premiumDesc'),
+    },
+    {
       href: '/estudio' as const,
       title: t('more.studyTitle'),
       desc: t('more.studyDesc'),

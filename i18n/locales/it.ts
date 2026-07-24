@@ -15,6 +15,7 @@ const it: TranslationSchema = {
     study: 'Studio',
     studyChat: 'Conversazione di studio',
     studySettings: 'Impostazioni di studio',
+    premium: 'Free & Premium',
     notFound: 'Non trovato',
   },
   brand: {
@@ -217,6 +218,8 @@ const it: TranslationSchema = {
     language: 'Lingua',
     studyTitle: 'Studio',
     studyDesc: 'Guida interattiva con la tua biblioteca della Quarta Via.',
+    premiumTitle: 'Free & Premium',
+    premiumDesc: 'What is included now — and what unlocks with Premium.',
     languageHint: 'L’app segue la lingua del dispositivo, o quella che scegli qui.',
   },
   revision: {
@@ -288,12 +291,46 @@ const it: TranslationSchema = {
       language_changed: 'Cambi di lingua',
     },
   },
+  premium: {
+    title: 'Membership',
+    youAreFree: 'You are on Free',
+    youArePremium: 'You are on Premium',
+    intro:
+      'One app. Two depths. Free holds the daily Work. Premium opens the AI study companion.',
+    freeTitle: 'Free',
+    free1: 'Daily guided practice',
+    free2: 'Stops, observation, aim, evening review',
+    free3: 'Quotes and local study guide',
+    free4: 'Everything stays on your device',
+    premiumTitle: 'Premium',
+    prem1: 'Study conversations with Anthropic (Claude)',
+    prem2: 'Richer answers grounded in your corpus',
+    prem3: 'More ritual depth as we grow the library',
+    storeNote:
+      'App Store purchase/subscription will land here. Until then, use the developer unlock to test Premium.',
+    ctaSoon: 'Subscribe (coming)',
+    ctaSoonMsg: 'Store billing is next. For now unlock with the developer code below.',
+    devTitle: 'Developer unlock',
+    devHint: 'For you while we wire payments. Code: THEWORK-PREMIUM',
+    unlock: 'Unlock Premium',
+    unlockOk: 'Premium unlocked on this device.',
+    unlockFail: 'That code did not match.',
+    backToFree: 'Return to Free',
+    cleared: 'Back on Free.',
+    close: 'Close',
+    gateStudyAi:
+      '— AI study is Premium. On Free you still get the local guide. Open Más → Free & Premium to unlock.',
+  },
+
   study: {
     hubTitle: 'Studio interattivo',
     hubIntro:
       'Un compagno vivo per l’insegnamento: conversa, prendi un brano del giorno, o approfondisci un’osservazione con il corpus su questo dispositivo.',
     enter: 'Entra',
     aiReady: 'Anthropic collegata — le risposte usano la tua chiave e i brani locali.',
+    aiNeedsPremium:
+      'Free includes the local guide. Premium unlocks Claude with your Anthropic key.',
+    seePremium: 'See Free & Premium',
     aiLocal:
       'Guida locale attiva. Aggiungi una API key Anthropic per un dialogo più ricco con i testi.',
     chatTitle: 'Conversare',

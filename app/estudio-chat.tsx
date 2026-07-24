@@ -9,10 +9,12 @@ import {
   Text,
   View,
 } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Body, Button, Field, Screen } from '@/components/ui';
+// Button used for premium gate CTA
 import { colors, fonts, radii, spacing } from '@/constants/theme';
+import { usePremium } from '@/context/PremiumContext';
 import { useWork } from '@/context/WorkContext';
 import { createId } from '@/lib/id';
 import { askAnthropic } from '@/lib/study/anthropic';
@@ -24,10 +26,13 @@ import type { ChatMessage, StudyMode } from '@/lib/study/types';
 
 export default function EstudioChatScreen() {
   const { t, i18n } = useTranslation();
+  const router = useRouter();
   const { track, observations, todayAim } = useWork();
+  const { canUse } = usePremium();
   const params = useLocalSearchParams<{ mode?: string }>();
   const mode = (params.mode as StudyMode) || 'chat';
   const scrollRef = useRef<ScrollView>(null);
+  const aiAllowed = canUse('studyAi');
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -86,9 +91,9 @@ export default function EstudioChatScreen() {
               4,
             );
 
-      const apiKey = await getAnthropicKey();
+      const apiKey = aiAllowed ? await getAnthropicKey() : null;
       let reply: string;
-      if (apiKey) {
+      if (aiAllowed && apiKey) {
         reply = await askAnthropic({
           apiKey,
           lang: i18n.language,
@@ -98,6 +103,9 @@ export default function EstudioChatScreen() {
         });
       } else {
         reply = localGuideReply(content, chunks, mode);
+        if (!aiAllowed) {
+          reply = `${reply}\n\n${t('premium.gateStudyAi')}`;
+        }
       }
 
       const assistant: ChatMessage = {
@@ -133,6 +141,13 @@ export default function EstudioChatScreen() {
             scrollRef.current?.scrollToEnd({ animated: true })
           }>
           <Body muted>{t(`study.modeHint.${mode}`)}</Body>
+          {!aiAllowed ? (
+            <Button
+              label={t('study.seePremium')}
+              variant="gold"
+              onPress={() => router.push('/premium')}
+            />
+          ) : null}
 
           {messages.length === 0 && !busy ? (
             <View style={styles.empty}>

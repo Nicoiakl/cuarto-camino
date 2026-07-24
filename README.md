@@ -30,6 +30,10 @@ En **Más → Estudio** hay una guía conversacional con el corpus del Cuarto Ca
 Los PDF originales y `assets/corpus/chunks.json` no van al repo (uso personal).  
 Para regenerar el índice: coloca textos en `private/corpus/` y ejecuta `node scripts/build-corpus.mjs`.
 
+## Instalar en el iPhone / Freemium
+
+Ver [INSTALL.md](./INSTALL.md): Expo Go (ahora), TestFlight (app instalada), y plan Free / Premium.
+
 ## Arranque
 
 ```bash
