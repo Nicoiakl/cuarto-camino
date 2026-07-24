@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Body, Button, Chip, Field, Screen, Section } from '@/components/ui';
 import { spacing } from '@/constants/theme';
 import { useWork } from '@/context/WorkContext';
 
 export default function RevisionScreen() {
+  const { t } = useTranslation();
   const { todayAim, todayReview, saveReview, track } = useWork();
   const [body, setBody] = useState(todayReview?.body ?? '');
   const [aimKept, setAimKept] = useState<boolean | null>(
@@ -26,45 +28,42 @@ export default function RevisionScreen() {
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}>
-        <Section title="Mirar el día">
-          <Body>
-            Sin juicio duro. ¿Dónde hubo un instante de recuerdo? ¿Dónde te llevó la
-            corriente?
-          </Body>
+        <Section title={t('revision.look')}>
+          <Body>{t('revision.intro')}</Body>
         </Section>
 
         {todayAim?.text ? (
-          <Section title="Aim de hoy">
+          <Section title={t('revision.aimToday')}>
             <Body>{todayAim.text}</Body>
             <View style={styles.row}>
               <Chip
-                label="Lo sostuve"
+                label={t('revision.kept')}
                 selected={aimKept === true}
                 onPress={() => setAimKept(true)}
               />
               <Chip
-                label="Se me fue"
+                label={t('revision.lost')}
                 selected={aimKept === false}
                 onPress={() => setAimKept(false)}
               />
             </View>
           </Section>
         ) : (
-          <Section title="Aim de hoy">
-            <Body muted>No planteaste aim. Aun así puedes revisar el día.</Body>
+          <Section title={t('revision.aimToday')}>
+            <Body muted>{t('revision.noAim')}</Body>
           </Section>
         )}
 
-        <Section title="Notas de la noche">
+        <Section title={t('revision.notes')}>
           <Field
             value={body}
             onChangeText={setBody}
-            placeholder="Lo que viste… lo que quieres recordar mañana…"
+            placeholder={t('revision.placeholder')}
             multiline
             style={{ minHeight: 160, textAlignVertical: 'top' }}
           />
           <Button
-            label="Guardar revisión"
+            label={t('revision.save')}
             onPress={() => saveReview(body, aimKept)}
             disabled={!body.trim()}
           />

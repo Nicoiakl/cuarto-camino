@@ -1,11 +1,13 @@
+import { useEffect } from 'react';
 import { SymbolView } from 'expo-symbols';
 import { Tabs } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { colors, fonts } from '@/constants/theme';
 import { useWork } from '@/context/WorkContext';
-import { useEffect } from 'react';
 
 export default function TabLayout() {
   const { track } = useWork();
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     track('app_open');
@@ -13,6 +15,7 @@ export default function TabLayout() {
 
   return (
     <Tabs
+      key={i18n.language}
       screenOptions={{
         tabBarActiveTintColor: colors.pine,
         tabBarInactiveTintColor: colors.muted,
@@ -38,7 +41,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Hoy',
+          title: t('tabs.today'),
           headerShown: false,
           tabBarIcon: ({ color }) => (
             <SymbolView
@@ -52,7 +55,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="stops"
         options={{
-          title: 'Stops',
+          title: t('tabs.stops'),
           tabBarIcon: ({ color }) => (
             <SymbolView
               name={{ ios: 'bell', android: 'notifications', web: 'notifications' }}
@@ -65,7 +68,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="observar"
         options={{
-          title: 'Observar',
+          title: t('tabs.observe'),
           tabBarIcon: ({ color }) => (
             <SymbolView
               name={{ ios: 'eye', android: 'visibility', web: 'visibility' }}
@@ -78,7 +81,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="aims"
         options={{
-          title: 'Aim',
+          title: t('tabs.aim'),
           tabBarIcon: ({ color }) => (
             <SymbolView
               name={{ ios: 'target', android: 'my_location', web: 'my_location' }}
@@ -91,7 +94,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="mas"
         options={{
-          title: 'Más',
+          title: t('tabs.more'),
           tabBarIcon: ({ color }) => (
             <SymbolView
               name={{

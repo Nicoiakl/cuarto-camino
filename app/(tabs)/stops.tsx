@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Body, Button, Chip, Screen, Section } from '@/components/ui';
 import { colors, fonts, radii, spacing } from '@/constants/theme';
 import { useWork } from '@/context/WorkContext';
@@ -9,6 +10,7 @@ import { ensureNotificationPermission } from '@/lib/notifications';
 const INTERVALS = [60, 90, 120, 180];
 
 export default function StopsScreen() {
+  const { t } = useTranslation();
   const { stopSettings, updateStopSettings, logStop, stopLogs, track } = useWork();
 
   useEffect(() => {
@@ -27,17 +29,14 @@ export default function StopsScreen() {
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}>
-        <Section title="Recordarme a mí mismo">
-          <Body>
-            Un stop no es una alarma de productividad. Es un llamado a volver: ¿dónde
-            estoy? ¿quién mira?
-          </Body>
+        <Section title={t('stops.title')}>
+          <Body>{t('stops.intro')}</Body>
         </Section>
 
-        <Section title="Estado">
+        <Section title={t('stops.status')}>
           <View style={styles.row}>
             <Chip
-              label={stopSettings.enabled ? 'Activos' : 'Pausados'}
+              label={stopSettings.enabled ? t('stops.active') : t('stops.paused')}
               selected={stopSettings.enabled}
               onPress={() =>
                 stopSettings.enabled
@@ -46,7 +45,7 @@ export default function StopsScreen() {
               }
             />
             <Chip
-              label={!stopSettings.enabled ? 'Activar' : 'Pausar'}
+              label={!stopSettings.enabled ? t('stops.enable') : t('stops.pause')}
               selected={!stopSettings.enabled}
               onPress={() =>
                 stopSettings.enabled
@@ -56,24 +55,24 @@ export default function StopsScreen() {
             />
           </View>
           {Platform.OS === 'web' ? (
-            <Body muted>
-              En la web los stops programados no suenan; usa el botón de presencia en
-              Hoy. En iOS/Android se programan notificaciones locales.
-            </Body>
+            <Body muted>{t('stops.webNote')}</Body>
           ) : (
             <Body muted>
-              Entre las {stopSettings.startHour}:00 y las {stopSettings.endHour}:00,
-              cada {stopSettings.intervalMinutes} minutos.
+              {t('stops.scheduleNote', {
+                start: stopSettings.startHour,
+                end: stopSettings.endHour,
+                minutes: stopSettings.intervalMinutes,
+              })}
             </Body>
           )}
         </Section>
 
-        <Section title="Intervalo">
+        <Section title={t('stops.interval')}>
           <View style={styles.row}>
             {INTERVALS.map((m) => (
               <Chip
                 key={m}
-                label={`${m} min`}
+                label={t('stops.minutes', { count: m })}
                 selected={stopSettings.intervalMinutes === m}
                 onPress={() => updateStopSettings({ intervalMinutes: m })}
               />
@@ -81,24 +80,24 @@ export default function StopsScreen() {
           </View>
         </Section>
 
-        <Section title="Ahora mismo">
-          <Button label="Estuve presente" onPress={() => logStop(true)} />
+        <Section title={t('stops.now')}>
+          <Button label={t('stops.wasPresent')} onPress={() => logStop(true)} />
           <Button
-            label="Lo noté tarde / me perdí"
+            label={t('stops.noticedLate')}
             variant="ghost"
             onPress={() => logStop(false)}
           />
         </Section>
 
-        <Section title="Registro reciente">
+        <Section title={t('stops.recent')}>
           {stopLogs.length === 0 ? (
-            <Body muted>Aún no hay stops registrados.</Body>
+            <Body muted>{t('stops.empty')}</Body>
           ) : (
             stopLogs.slice(0, 12).map((s) => (
               <View key={s.id} style={styles.log}>
                 <Text style={styles.logTime}>{formatFriendlyDateTime(s.at)}</Text>
                 <Text style={styles.logState}>
-                  {s.remembered ? 'Presencia' : 'Olvido notado'}
+                  {s.remembered ? t('stops.presence') : t('stops.missed')}
                 </Text>
               </View>
             ))

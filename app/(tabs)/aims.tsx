@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Body, Button, Field, Screen, Section } from '@/components/ui';
 import { colors, fonts, radii, spacing } from '@/constants/theme';
 import { useWork } from '@/context/WorkContext';
 import { formatDayLabel } from '@/lib/dates';
 
 export default function AimsScreen() {
+  const { t } = useTranslation();
   const { todayAim, setAimForToday, aims, track } = useWork();
   const [text, setText] = useState(todayAim?.text ?? '');
 
@@ -18,6 +20,7 @@ export default function AimsScreen() {
   }, [todayAim?.text]);
 
   const history = aims.filter((a) => a.id !== todayAim?.id).slice(0, 14);
+  const examples = [t('aims.ex1'), t('aims.ex2'), t('aims.ex3')];
 
   return (
     <Screen>
@@ -25,54 +28,42 @@ export default function AimsScreen() {
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}>
-        <Section title="Aim consciente">
-          <Body>
-            Un aim es una dirección posible para hoy — concreta, sentida, no un deseo
-            vago. Mejor pequeño y vivo que grande y abstracto.
-          </Body>
+        <Section title={t('aims.title')}>
+          <Body>{t('aims.intro')}</Body>
         </Section>
 
-        <Section title="Aim de hoy">
+        <Section title={t('aims.today')}>
           <Field
             value={text}
             onChangeText={setText}
-            placeholder="Ej.: Recordarme al cruzar umbrales"
+            placeholder={t('aims.placeholder')}
             multiline
             style={{ minHeight: 96, textAlignVertical: 'top' }}
           />
           <Button
-            label="Guardar aim"
+            label={t('aims.save')}
             onPress={() => setAimForToday(text)}
             disabled={!text.trim()}
           />
           {todayAim?.kept != null ? (
             <Body muted>
-              Por la noche marcaste:{' '}
-              {todayAim.kept ? 'lo mantuve en parte' : 'se me fue'}
+              {t('aims.nightMarked')}{' '}
+              {todayAim.kept ? t('aims.keptPartly') : t('aims.slippedAway')}
             </Body>
           ) : null}
         </Section>
 
-        <Section title="Ejemplos vivos">
+        <Section title={t('aims.examples')}>
           <View style={styles.examples}>
-            {[
-              'Cuando hable, notar la voz y el cuerpo',
-              'Una vez cada hora: ¿estoy aquí?',
-              'No justificar automáticamente la irritación',
-            ].map((ex) => (
-              <Button
-                key={ex}
-                label={ex}
-                variant="ghost"
-                onPress={() => setText(ex)}
-              />
+            {examples.map((ex) => (
+              <Button key={ex} label={ex} variant="ghost" onPress={() => setText(ex)} />
             ))}
           </View>
         </Section>
 
-        <Section title="Días anteriores">
+        <Section title={t('aims.history')}>
           {history.length === 0 ? (
-            <Body muted>El historial de aims aparecerá aquí.</Body>
+            <Body muted>{t('aims.historyEmpty')}</Body>
           ) : (
             history.map((a) => (
               <View key={a.id} style={styles.card}>
@@ -80,10 +71,10 @@ export default function AimsScreen() {
                 <Text style={styles.aim}>{a.text}</Text>
                 <Text style={styles.kept}>
                   {a.kept == null
-                    ? 'Sin revisión'
+                    ? t('aims.noReview')
                     : a.kept
-                      ? 'Aim sostenido'
-                      : 'Aim perdido de vista'}
+                      ? t('aims.aimKept')
+                      : t('aims.aimLost')}
                 </Text>
               </View>
             ))

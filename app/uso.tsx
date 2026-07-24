@@ -1,29 +1,12 @@
 import { useEffect, useMemo } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Body, Screen, Section } from '@/components/ui';
 import { colors, fonts, radii, spacing } from '@/constants/theme';
 import { useWork } from '@/context/WorkContext';
 
-const LABELS: Record<string, string> = {
-  app_open: 'Aperturas de la app',
-  screen_hoy: 'Pantalla Hoy',
-  screen_stops: 'Pantalla Stops',
-  screen_observar: 'Pantalla Observar',
-  screen_aims: 'Pantalla Aim',
-  screen_mas: 'Pantalla Más',
-  screen_revision: 'Revisión nocturna',
-  screen_citas: 'Citas',
-  observation_created: 'Observaciones creadas',
-  aim_set: 'Aims guardados',
-  stop_remembered: 'Stops con presencia',
-  stop_missed: 'Stops perdidos / notados tarde',
-  stop_settings_updated: 'Ajustes de stops',
-  review_saved: 'Revisiones guardadas',
-  quote_opened: 'Citas abiertas',
-  nav_mas: 'Navegación desde Más',
-};
-
 export default function UsoScreen() {
+  const { t } = useTranslation();
   const { usageStats, track, analytics } = useWork();
 
   useEffect(() => {
@@ -34,11 +17,15 @@ export default function UsoScreen() {
     () =>
       usageStats
         .filter((s) => s.name !== 'screen_uso')
-        .map((s) => ({
-          ...s,
-          label: LABELS[s.name] ?? s.name,
-        })),
-    [usageStats],
+        .map((s) => {
+          const key = `usage.eventsMap.${s.name}`;
+          const label = t(key);
+          return {
+            ...s,
+            label: label === key ? s.name : label,
+          };
+        }),
+    [usageStats, t],
   );
 
   const max = ranked[0]?.count ?? 1;
@@ -46,20 +33,14 @@ export default function UsoScreen() {
   return (
     <Screen>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Section title="Analítica local">
-          <Body>
-            Empezamos con más herramientas de las necesarias. Esta pantalla te muestra
-            qué usas de verdad para que, con el tiempo, podamos restar sin adivinar.
-          </Body>
-          <Body muted>
-            {analytics.length} eventos registrados en este dispositivo. No se envían a
-            ningún servidor.
-          </Body>
+        <Section title={t('usage.title')}>
+          <Body>{t('usage.intro')}</Body>
+          <Body muted>{t('usage.events', { count: analytics.length })}</Body>
         </Section>
 
-        <Section title="Qué más usas">
+        <Section title={t('usage.mostUsed')}>
           {ranked.length === 0 ? (
-            <Body muted>Usa la app unos días y vuelve aquí.</Body>
+            <Body muted>{t('usage.empty')}</Body>
           ) : (
             ranked.map((item) => (
               <View key={item.name} style={styles.row}>
@@ -80,11 +61,8 @@ export default function UsoScreen() {
           )}
         </Section>
 
-        <Section title="Cómo leerlo">
-          <Body muted>
-            Si una pantalla casi no aparece, quizás no pertenece a tu práctica. Si
-            presencia y Observar dominan, el resto puede volverse secundario.
-          </Body>
+        <Section title={t('usage.howToRead')}>
+          <Body muted>{t('usage.howToReadBody')}</Body>
         </Section>
       </ScrollView>
     </Screen>

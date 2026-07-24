@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
+import { useTranslation } from 'react-i18next';
 import {
   Body,
   BrandMark,
@@ -14,12 +15,13 @@ import {
 } from '@/components/ui';
 import { colors, fonts, radii, spacing } from '@/constants/theme';
 import { useWork } from '@/context/WorkContext';
-import { quoteOfDay } from '@/lib/quotes';
+import { quoteOfDay, quoteSource, quoteText } from '@/lib/quotes';
 import { formatFriendlyDateTime } from '@/lib/dates';
 
 export default function HoyScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { t } = useTranslation();
   const { todayAim, logStop, track, observations, todayReview } = useWork();
   const [pulse, setPulse] = useState(false);
   const quote = quoteOfDay();
@@ -40,6 +42,7 @@ export default function HoyScreen() {
   };
 
   const recent = observations.slice(0, 3);
+  const rememberLabel = t('home.remember');
 
   return (
     <Screen>
@@ -50,40 +53,46 @@ export default function HoyScreen() {
         ]}
         showsVerticalScrollIndicator={false}>
         <Animated.View entering={FadeIn.duration(700)}>
-          <BrandMark subtitle="Cuarto Camino · espacio para la conciencia" />
+          <BrandMark subtitle={t('brand.subtitle')} />
         </Animated.View>
 
         <Animated.View entering={FadeInUp.delay(120).duration(650)} style={styles.presenceBlock}>
           <View style={styles.pulseWrap}>
             <PresencePulse active={pulse} />
             <Pressable onPress={remember} style={styles.presenceBtn}>
-              <Text style={styles.presenceLabel}>Recuérdate</Text>
-              <Text style={styles.presenceHint}>un momento de presencia</Text>
+              <Text
+                style={[
+                  styles.presenceLabel,
+                  rememberLabel.length > 12 && styles.presenceLabelSmall,
+                ]}>
+                {rememberLabel}
+              </Text>
+              <Text style={styles.presenceHint}>{t('home.rememberHint')}</Text>
             </Pressable>
           </View>
         </Animated.View>
 
-        <Section title="Aim de hoy" delay={220}>
+        <Section title={t('home.aimToday')} delay={220}>
           {todayAim?.text ? (
             <Text style={styles.aimText}>{todayAim.text}</Text>
           ) : (
-            <Body muted>Aún no hay aim. El Trabajo pide una dirección concreta.</Body>
+            <Body muted>{t('home.noAim')}</Body>
           )}
           <Button
-            label={todayAim ? 'Revisar aim' : 'Plantear aim'}
+            label={todayAim ? t('home.reviewAim') : t('home.setAim')}
             variant="ghost"
             onPress={() => router.push('/aims')}
           />
         </Section>
 
-        <Section title="Cita del día" delay={320}>
-          <Text style={styles.quote}>“{quote.text}”</Text>
-          <Body muted>{quote.source}</Body>
+        <Section title={t('home.quoteOfDay')} delay={320}>
+          <Text style={styles.quote}>“{quoteText(quote.id)}”</Text>
+          <Body muted>{quoteSource()}</Body>
         </Section>
 
-        <Section title="Últimas observaciones" delay={420}>
+        <Section title={t('home.recentObs')} delay={420}>
           {recent.length === 0 ? (
-            <Body muted>Cuando te veas, anótalo sin corregir demasiado pronto.</Body>
+            <Body muted>{t('home.recentObsEmpty')}</Body>
           ) : (
             recent.map((o) => (
               <View key={o.id} style={styles.obsRow}>
@@ -94,17 +103,19 @@ export default function HoyScreen() {
               </View>
             ))
           )}
-          <Button label="Observar" variant="ghost" onPress={() => router.push('/observar')} />
+          <Button
+            label={t('home.observe')}
+            variant="ghost"
+            onPress={() => router.push('/observar')}
+          />
         </Section>
 
-        <Section title="Cierre del día" delay={520}>
+        <Section title={t('home.dayClose')} delay={520}>
           <Body muted>
-            {todayReview
-              ? 'Ya hay una revisión de hoy. Puedes volver a ella.'
-              : 'Por la noche, mira el día sin condena: ¿dónde hubo presencia?'}
+            {todayReview ? t('home.reviewExists') : t('home.reviewPrompt')}
           </Body>
           <Button
-            label={todayReview ? 'Ver revisión' : 'Revisión nocturna'}
+            label={todayReview ? t('home.seeReview') : t('home.eveningReview')}
             variant="gold"
             onPress={() => router.push('/revision')}
           />
@@ -136,6 +147,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 4,
+    paddingHorizontal: 12,
     shadowColor: colors.pine,
     shadowOpacity: 0.22,
     shadowRadius: 18,
@@ -144,13 +156,19 @@ const styles = StyleSheet.create({
   },
   presenceLabel: {
     fontFamily: fonts.display,
-    fontSize: 28,
+    fontSize: 26,
     color: colors.white,
+    textAlign: 'center',
+  },
+  presenceLabelSmall: {
+    fontSize: 20,
+    lineHeight: 24,
   },
   presenceHint: {
     fontFamily: fonts.bodyItalic,
-    fontSize: 12,
+    fontSize: 11,
     color: colors.goldSoft,
+    textAlign: 'center',
   },
   aimText: {
     fontFamily: fonts.displayItalic,

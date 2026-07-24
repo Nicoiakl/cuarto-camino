@@ -14,6 +14,11 @@ Partimos con más de lo mínimo a propósito. La pantalla **Uso** registra anal�
 
 Los datos viven en el dispositivo (`AsyncStorage`). Sin cuenta ni nube.
 
+## Idiomas
+
+Inglés, español, francés, portugués, alemán e italiano.  
+Se detecta el idioma del dispositivo y se puede cambiar en **Más → Idioma**.
+
 ## Arranque
 
 ```bash

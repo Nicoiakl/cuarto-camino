@@ -1,85 +1,53 @@
+import i18n from '@/i18n';
+
+export type QuoteTheme = 'recuerdo' | 'observacion' | 'aim' | 'centros' | 'trabajo';
+
 export type Quote = {
-  id: string;
-  text: string;
-  source: string;
-  theme: 'recuerdo' | 'observacion' | 'aim' | 'centros' | 'trabajo';
+  id: keyof typeof QUOTE_IDS;
+  theme: QuoteTheme;
 };
 
-/** Citas breves y máximas del Trabajo — para estudio personal. */
+const QUOTE_IDS = {
+  q1: true,
+  q2: true,
+  q3: true,
+  q4: true,
+  q5: true,
+  q6: true,
+  q7: true,
+  q8: true,
+  q9: true,
+  q10: true,
+  q11: true,
+  q12: true,
+} as const;
+
 export const QUOTES: Quote[] = [
-  {
-    id: 'q1',
-    text: 'Recuérdate a ti mismo.',
-    source: 'Enseñanza del Cuarto Camino',
-    theme: 'recuerdo',
-  },
-  {
-    id: 'q2',
-    text: 'El hombre no puede hacer. Todo le sucede.',
-    source: 'Enseñanza del Cuarto Camino',
-    theme: 'trabajo',
-  },
-  {
-    id: 'q3',
-    text: 'Conócete a ti mismo.',
-    source: 'Enseñanza del Cuarto Camino',
-    theme: 'observacion',
-  },
-  {
-    id: 'q4',
-    text: 'La observación de sí es el comienzo del despertar.',
-    source: 'Enseñanza del Cuarto Camino',
-    theme: 'observacion',
-  },
-  {
-    id: 'q5',
-    text: 'Sin aim no hay Trabajo.',
-    source: 'Enseñanza del Cuarto Camino',
-    theme: 'aim',
-  },
-  {
-    id: 'q6',
-    text: 'Somos una multiplicidad. No hay un solo “yo”.',
-    source: 'Enseñanza del Cuarto Camino',
-    theme: 'observacion',
-  },
-  {
-    id: 'q7',
-    text: 'Identificarse es perderse.',
-    source: 'Enseñanza del Cuarto Camino',
-    theme: 'observacion',
-  },
-  {
-    id: 'q8',
-    text: 'El trabajo sobre uno mismo es trabajo en la vida.',
-    source: 'Enseñanza del Cuarto Camino',
-    theme: 'trabajo',
-  },
-  {
-    id: 'q9',
-    text: 'Los centros hablan lenguajes distintos. Escúchalos sin juzgar.',
-    source: 'Enseñanza del Cuarto Camino',
-    theme: 'centros',
-  },
-  {
-    id: 'q10',
-    text: 'Un momento de presencia vale más que horas de sueño despierto.',
-    source: 'Enseñanza del Cuarto Camino',
-    theme: 'recuerdo',
-  },
-  {
-    id: 'q11',
-    text: 'Ver es ya un acto. No corrijas demasiado pronto.',
-    source: 'Enseñanza del Cuarto Camino',
-    theme: 'observacion',
-  },
-  {
-    id: 'q12',
-    text: 'El aim debe ser concreto, posible y sentido.',
-    source: 'Enseñanza del Cuarto Camino',
-    theme: 'aim',
-  },
+  { id: 'q1', theme: 'recuerdo' },
+  { id: 'q2', theme: 'trabajo' },
+  { id: 'q3', theme: 'observacion' },
+  { id: 'q4', theme: 'observacion' },
+  { id: 'q5', theme: 'aim' },
+  { id: 'q6', theme: 'observacion' },
+  { id: 'q7', theme: 'observacion' },
+  { id: 'q8', theme: 'trabajo' },
+  { id: 'q9', theme: 'centros' },
+  { id: 'q10', theme: 'recuerdo' },
+  { id: 'q11', theme: 'observacion' },
+  { id: 'q12', theme: 'aim' },
 ];
+
+export function quoteText(id: Quote['id']): string {
+  return i18n.t(`quotes.items.${id}`);
+}
+
+export function quoteSource(): string {
+  return i18n.t('quotes.source');
+}
+
+export function quoteThemeLabel(theme: QuoteTheme): string {
+  return i18n.t(`quotes.themes.${theme}`);
+}
 
 export function quoteOfDay(date = new Date()): Quote {
   const day = Math.floor(date.getTime() / 86_400_000);

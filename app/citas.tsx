@@ -1,11 +1,13 @@
 import { useEffect } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Body, Screen, Section } from '@/components/ui';
 import { colors, fonts, radii, spacing } from '@/constants/theme';
 import { useWork } from '@/context/WorkContext';
-import { QUOTES } from '@/lib/quotes';
+import { QUOTES, quoteSource, quoteText, quoteThemeLabel } from '@/lib/quotes';
 
 export default function CitasScreen() {
+  const { t } = useTranslation();
   const { track } = useWork();
 
   useEffect(() => {
@@ -15,10 +17,8 @@ export default function CitasScreen() {
   return (
     <Screen>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Section title="Palabras para el Trabajo">
-          <Body muted>
-            Léelas despacio. Una sola frase, bien recibida, puede bastar para el día.
-          </Body>
+        <Section title={t('quotes.title')}>
+          <Body muted>{t('quotes.intro')}</Body>
         </Section>
 
         {QUOTES.map((q) => (
@@ -26,10 +26,10 @@ export default function CitasScreen() {
             key={q.id}
             onPress={() => track('quote_opened', { id: q.id, theme: q.theme })}
             style={styles.card}>
-            <Text style={styles.quote}>“{q.text}”</Text>
-            <Text style={styles.source}>{q.source}</Text>
+            <Text style={styles.quote}>“{quoteText(q.id)}”</Text>
+            <Text style={styles.source}>{quoteSource()}</Text>
             <View style={styles.tag}>
-              <Text style={styles.tagText}>{q.theme}</Text>
+              <Text style={styles.tagText}>{quoteThemeLabel(q.theme)}</Text>
             </View>
           </Pressable>
         ))}

@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
+import i18n from '@/i18n';
 import type { StopSettings } from './types';
 
 Notifications.setNotificationHandler({
@@ -44,7 +45,7 @@ export async function scheduleStops(settings: StopSettings): Promise<number> {
     await Notifications.scheduleNotificationAsync({
       content: {
         title: 'The Work',
-        body: '¿Estás aquí? Un momento de presencia.',
+        body: i18n.t('stops.notificationBody'),
         sound: true,
       },
       trigger: {

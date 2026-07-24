@@ -11,7 +11,9 @@
       "supportsTablet": true,
       "bundleIdentifier": "app.thework.practice",
       "infoPlist": {
-        "UIBackgroundModes": ["remote-notification"]
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
       }
     },
     "android": {
@@ -45,7 +47,8 @@
         {
           "color": "#2C4A3E"
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true

@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Body, Button, Chip, Field, Screen, Section } from '@/components/ui';
 import { colors, fonts, radii, spacing } from '@/constants/theme';
 import { useWork } from '@/context/WorkContext';
-import { CENTER_LABELS, type Center } from '@/lib/types';
+import { CENTERS, type Center } from '@/lib/types';
 import { formatFriendlyDateTime } from '@/lib/dates';
 
-const CENTERS = Object.keys(CENTER_LABELS) as Center[];
-
 export default function ObservarScreen() {
+  const { t } = useTranslation();
   const { addObservation, observations, removeObservation, track } = useWork();
   const [body, setBody] = useState('');
   const [centers, setCenters] = useState<Center[]>([]);
@@ -24,6 +24,8 @@ export default function ObservarScreen() {
     );
   };
 
+  const centerLabel = (c: Center) => t(`centers.${c}`);
+
   const save = () => {
     if (!body.trim()) return;
     addObservation({ body, centers, identified });
@@ -34,14 +36,18 @@ export default function ObservarScreen() {
 
   const confirmRemove = (id: string) => {
     if (Platform.OS === 'web') {
-      if (typeof window !== 'undefined' && window.confirm('¿Borrar esta observación?')) {
+      if (typeof window !== 'undefined' && window.confirm(t('observe.deleteWeb'))) {
         removeObservation(id);
       }
       return;
     }
-    Alert.alert('Borrar observación', '¿Quieres eliminarla?', [
-      { text: 'Cancelar', style: 'cancel' },
-      { text: 'Borrar', style: 'destructive', onPress: () => removeObservation(id) },
+    Alert.alert(t('observe.deleteTitle'), t('observe.deleteConfirm'), [
+      { text: t('observe.cancel'), style: 'cancel' },
+      {
+        text: t('observe.delete'),
+        style: 'destructive',
+        onPress: () => removeObservation(id),
+      },
     ]);
   };
 
@@ -51,29 +57,26 @@ export default function ObservarScreen() {
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}>
-        <Section title="Auto-observación">
-          <Body>
-            Describe lo que ves en ti: un “yo”, una emoción, una tensión, una
-            identificación. Sin moralizar.
-          </Body>
+        <Section title={t('observe.title')}>
+          <Body>{t('observe.intro')}</Body>
         </Section>
 
-        <Section title="¿Qué observas?">
+        <Section title={t('observe.what')}>
           <Field
             value={body}
             onChangeText={setBody}
-            placeholder="Ej.: Me identifiqué con la prisa en el trabajo…"
+            placeholder={t('observe.placeholder')}
             multiline
             style={{ minHeight: 110, textAlignVertical: 'top' }}
           />
         </Section>
 
-        <Section title="Centros implicados">
+        <Section title={t('observe.centers')}>
           <View style={styles.row}>
             {CENTERS.map((c) => (
               <Chip
                 key={c}
-                label={CENTER_LABELS[c]}
+                label={centerLabel(c)}
                 selected={centers.includes(c)}
                 onPress={() => toggleCenter(c)}
               />
@@ -81,25 +84,29 @@ export default function ObservarScreen() {
           </View>
         </Section>
 
-        <Section title="Identificación">
+        <Section title={t('observe.identification')}>
           <View style={styles.row}>
             <Chip
-              label="Estaba identificado"
+              label={t('observe.wasIdentified')}
               selected={identified}
               onPress={() => setIdentified(true)}
             />
             <Chip
-              label="Había algo de separación"
+              label={t('observe.someSeparation')}
               selected={!identified}
               onPress={() => setIdentified(false)}
             />
           </View>
-          <Button label="Guardar observación" onPress={save} disabled={!body.trim()} />
+          <Button
+            label={t('observe.save')}
+            onPress={save}
+            disabled={!body.trim()}
+          />
         </Section>
 
-        <Section title="Diario">
+        <Section title={t('observe.journal')}>
           {observations.length === 0 ? (
-            <Body muted>Tu bitácora de conciencia aparecerá aquí.</Body>
+            <Body muted>{t('observe.empty')}</Body>
           ) : (
             observations.map((o) => (
               <Pressable
@@ -110,16 +117,16 @@ export default function ObservarScreen() {
                 <Text style={styles.body}>{o.body}</Text>
                 <Text style={styles.tags}>
                   {o.centers.length
-                    ? o.centers.map((c) => CENTER_LABELS[c]).join(' · ')
-                    : 'Sin centro marcado'}
+                    ? o.centers.map((c) => centerLabel(c)).join(' · ')
+                    : t('observe.noCenter')}
                   {' · '}
-                  {o.identified ? 'Identificado' : 'Más separado'}
+                  {o.identified ? t('observe.identified') : t('observe.moreSeparate')}
                 </Text>
               </Pressable>
             ))
           )}
           {observations.length > 0 ? (
-            <Body muted>Mantén pulsada una nota para borrarla.</Body>
+            <Body muted>{t('observe.longPress')}</Body>
           ) : null}
         </Section>
       </ScrollView>

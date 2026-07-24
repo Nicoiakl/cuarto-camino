@@ -11,9 +11,11 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { I18nextProvider, useTranslation } from 'react-i18next';
 import 'react-native-reanimated';
 
+import i18n, { loadSavedLanguage } from '@/i18n';
 import { WorkProvider } from '@/context/WorkContext';
 import { colors } from '@/constants/theme';
 
@@ -33,35 +35,51 @@ export default function RootLayout() {
     Literata_400Regular_Italic,
     Literata_500Medium,
   });
+  const [i18nReady, setI18nReady] = useState(false);
 
   useEffect(() => {
     if (error) throw error;
   }, [error]);
 
   useEffect(() => {
-    if (loaded) SplashScreen.hideAsync();
-  }, [loaded]);
+    loadSavedLanguage().finally(() => setI18nReady(true));
+  }, []);
 
-  if (!loaded) return null;
+  useEffect(() => {
+    if (loaded && i18nReady) SplashScreen.hideAsync();
+  }, [loaded, i18nReady]);
+
+  if (!loaded || !i18nReady) return null;
 
   return (
-    <WorkProvider>
-      <StatusBar style="dark" />
-      <Stack
-        screenOptions={{
-          headerStyle: { backgroundColor: colors.bg },
-          headerTintColor: colors.pine,
-          headerTitleStyle: {
-            fontFamily: 'Literata_500Medium',
-            color: colors.ink,
-          },
-          contentStyle: { backgroundColor: colors.bg },
-        }}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="revision" options={{ title: 'Revisión nocturna' }} />
-        <Stack.Screen name="citas" options={{ title: 'Citas del Trabajo' }} />
-        <Stack.Screen name="uso" options={{ title: 'Uso' }} />
-      </Stack>
-    </WorkProvider>
+    <I18nextProvider i18n={i18n}>
+      <WorkProvider>
+        <StatusBar style="dark" />
+        <RootStack />
+      </WorkProvider>
+    </I18nextProvider>
+  );
+}
+
+function RootStack() {
+  const { t, i18n: i18nInstance } = useTranslation();
+
+  return (
+    <Stack
+      key={i18nInstance.language}
+      screenOptions={{
+        headerStyle: { backgroundColor: colors.bg },
+        headerTintColor: colors.pine,
+        headerTitleStyle: {
+          fontFamily: 'Literata_500Medium',
+          color: colors.ink,
+        },
+        contentStyle: { backgroundColor: colors.bg },
+      }}>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="revision" options={{ title: t('screens.revision') }} />
+      <Stack.Screen name="citas" options={{ title: t('screens.quotes') }} />
+      <Stack.Screen name="uso" options={{ title: t('screens.usage') }} />
+    </Stack>
   );
 }

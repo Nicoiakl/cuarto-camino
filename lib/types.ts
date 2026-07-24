@@ -1,11 +1,11 @@
 export type Center = 'intelectual' | 'emocional' | 'motor' | 'instinctivo';
 
-export const CENTER_LABELS: Record<Center, string> = {
-  intelectual: 'Intelectual',
-  emocional: 'Emocional',
-  motor: 'Motor',
-  instinctivo: 'Instintivo',
-};
+export const CENTERS: Center[] = [
+  'intelectual',
+  'emocional',
+  'motor',
+  'instinctivo',
+];
 
 export type Observation = {
   id: string;

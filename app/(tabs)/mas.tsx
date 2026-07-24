@@ -1,48 +1,69 @@
 import { useEffect } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Body, Screen, Section } from '@/components/ui';
+import { useTranslation } from 'react-i18next';
+import { Body, Chip, Screen, Section } from '@/components/ui';
 import { colors, fonts, radii, spacing } from '@/constants/theme';
 import { useWork } from '@/context/WorkContext';
-
-const LINKS = [
-  {
-    href: '/revision',
-    title: 'Revisión nocturna',
-    desc: 'Cierra el día con honestidad suave.',
-  },
-  {
-    href: '/citas',
-    title: 'Citas del Trabajo',
-    desc: 'Máximas para alimentar el recuerdo.',
-  },
-  {
-    href: '/uso',
-    title: 'Uso',
-    desc: 'Qué usas de verdad — para ir restando después.',
-  },
-] as const;
+import { scheduleStops } from '@/lib/notifications';
+import { SUPPORTED_LANGS, setAppLanguage, type AppLanguage } from '@/i18n';
 
 export default function MasScreen() {
   const router = useRouter();
-  const { track, observations, stopLogs, aims, reviews } = useWork();
+  const { t, i18n } = useTranslation();
+  const { track, observations, stopLogs, aims, reviews, stopSettings } = useWork();
 
   useEffect(() => {
     track('screen_mas');
   }, [track]);
 
+  const links = [
+    {
+      href: '/revision' as const,
+      title: t('more.revisionTitle'),
+      desc: t('more.revisionDesc'),
+    },
+    {
+      href: '/citas' as const,
+      title: t('more.quotesTitle'),
+      desc: t('more.quotesDesc'),
+    },
+    {
+      href: '/uso' as const,
+      title: t('more.usageTitle'),
+      desc: t('more.usageDesc'),
+    },
+  ];
+
+  const changeLanguage = async (lang: AppLanguage) => {
+    await setAppLanguage(lang);
+    track('language_changed', { lang });
+    await scheduleStops(stopSettings).catch(() => {});
+  };
+
   return (
     <Screen>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Section title="El espacio">
-          <Body>
-            Aquí está lo demás del Trabajo: revisión, palabras que orientan, y la
-            analítica local para ver qué vive en tu práctica.
-          </Body>
+        <Section title={t('more.space')}>
+          <Body>{t('more.intro')}</Body>
         </Section>
 
-        <Section title="Ir a">
-          {LINKS.map((item) => (
+        <Section title={t('more.language')}>
+          <Body muted>{t('more.languageHint')}</Body>
+          <View style={styles.row}>
+            {SUPPORTED_LANGS.map((lang) => (
+              <Chip
+                key={lang}
+                label={t(`languages.${lang}`)}
+                selected={i18n.language === lang}
+                onPress={() => changeLanguage(lang)}
+              />
+            ))}
+          </View>
+        </Section>
+
+        <Section title={t('more.goTo')}>
+          {links.map((item) => (
             <Pressable
               key={item.href}
               onPress={() => {
@@ -56,17 +77,14 @@ export default function MasScreen() {
           ))}
         </Section>
 
-        <Section title="Tu práctica (local)">
+        <Section title={t('more.practice')}>
           <View style={styles.stats}>
-            <Stat label="Observaciones" value={observations.length} />
-            <Stat label="Stops" value={stopLogs.length} />
-            <Stat label="Aims" value={aims.length} />
-            <Stat label="Revisiones" value={reviews.length} />
+            <Stat label={t('more.observations')} value={observations.length} />
+            <Stat label={t('more.stops')} value={stopLogs.length} />
+            <Stat label={t('more.aims')} value={aims.length} />
+            <Stat label={t('more.reviews')} value={reviews.length} />
           </View>
-          <Body muted>
-            Todo queda en este dispositivo. No hay cuenta ni nube en esta primera
-            versión.
-          </Body>
+          <Body muted>{t('more.localNote')}</Body>
         </Section>
       </ScrollView>
     </Screen>
@@ -86,6 +104,11 @@ const styles = StyleSheet.create({
   content: {
     padding: spacing.lg,
     paddingBottom: 48,
+  },
+  row: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
   },
   link: {
     backgroundColor: colors.surface,
