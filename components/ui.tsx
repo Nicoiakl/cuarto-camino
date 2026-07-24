@@ -452,8 +452,8 @@ const styles = StyleSheet.create({
   },
   brand: {
     fontFamily: fonts.display,
-    fontSize: type.brand.size,
-    lineHeight: type.brand.line,
+    fontSize: 42,
+    lineHeight: 44,
     letterSpacing: type.brand.tracking,
     color: colors.ink,
   },
@@ -474,10 +474,10 @@ const styles = StyleSheet.create({
   },
   brandSub: {
     fontFamily: fonts.bodyItalic,
-    fontSize: 16,
-    lineHeight: 26,
+    fontSize: 14.5,
+    lineHeight: 22,
     color: colors.muted,
-    maxWidth: 300,
+    maxWidth: 280,
   },
   headline: {
     fontFamily: fonts.display,
