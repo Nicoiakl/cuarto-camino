@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Body, Chip, Screen, Section } from '@/components/ui';
-import { colors, fonts, radii, spacing } from '@/constants/theme';
+import { Body, BrandMark, Chip, Screen, Section } from '@/components/ui';
+import { colors, fonts, spacing } from '@/constants/theme';
 import { useWork } from '@/context/WorkContext';
 import { scheduleStops } from '@/lib/notifications';
 import { SUPPORTED_LANGS, setAppLanguage, type AppLanguage } from '@/i18n';
@@ -54,8 +54,10 @@ export default function MasScreen() {
   return (
     <Screen>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <BrandMark subtitle={t('more.intro')} />
+
         <Section title={t('more.space')}>
-          <Body>{t('more.intro')}</Body>
+          <Body muted>{t('more.localNote')}</Body>
         </Section>
 
         <Section title={t('more.language')}>
@@ -94,7 +96,6 @@ export default function MasScreen() {
             <Stat label={t('more.aims')} value={aims.length} />
             <Stat label={t('more.reviews')} value={reviews.length} />
           </View>
-          <Body muted>{t('more.localNote')}</Body>
         </Section>
       </ScrollView>
     </Screen>
@@ -121,21 +122,20 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   link: {
-    backgroundColor: colors.surface,
-    borderRadius: radii.md,
-    borderWidth: 1,
-    borderColor: colors.line,
-    padding: spacing.md,
+    paddingVertical: spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.line,
     gap: 4,
   },
   linkTitle: {
     fontFamily: fonts.display,
-    fontSize: 24,
+    fontSize: 26,
     color: colors.ink,
   },
   linkDesc: {
     fontFamily: fonts.body,
     fontSize: 14,
+    lineHeight: 20,
     color: colors.muted,
   },
   stats: {
@@ -145,20 +145,18 @@ const styles = StyleSheet.create({
   },
   stat: {
     width: '47%',
-    backgroundColor: colors.surface,
-    borderRadius: radii.md,
-    borderWidth: 1,
-    borderColor: colors.line,
-    padding: spacing.md,
+    paddingVertical: spacing.sm,
+    gap: 2,
   },
   statValue: {
     fontFamily: fonts.display,
-    fontSize: 32,
-    color: colors.pine,
+    fontSize: 34,
+    color: colors.focus,
   },
   statLabel: {
-    fontFamily: fonts.body,
-    fontSize: 13,
+    fontFamily: fonts.ui,
+    fontSize: 12,
+    letterSpacing: 0.2,
     color: colors.muted,
   },
 });

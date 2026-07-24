@@ -2,15 +2,62 @@ import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  FadeInUp,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
+import { StatusBar } from 'expo-status-bar';
 import * as Haptics from 'expo-haptics';
 import { useTranslation } from 'react-i18next';
-import { Body, Button, Chip, Headline, Screen } from '@/components/ui';
-import { colors, fonts, radii, spacing } from '@/constants/theme';
+import { Body, BrandMark, Button, Chip, Headline, PresencePulse, Screen } from '@/components/ui';
+import { colors, fonts, motion, radii, spacing } from '@/constants/theme';
 import { useWork } from '@/context/WorkContext';
 import { practiceOfDay } from '@/lib/practice';
 
 type Phase = 'checkin' | 'guide' | 'checkout' | 'done';
+
+function BreathBeacon() {
+  const scale = useSharedValue(0.86);
+  const glow = useSharedValue(0.28);
+
+  useEffect(() => {
+    scale.value = withRepeat(
+      withSequence(
+        withTiming(1.08, { duration: 2800 }),
+        withTiming(0.86, { duration: 2800 }),
+      ),
+      -1,
+      false,
+    );
+    glow.value = withRepeat(
+      withSequence(
+        withTiming(0.55, { duration: 2800 }),
+        withTiming(0.22, { duration: 2800 }),
+      ),
+      -1,
+      false,
+    );
+  }, [glow, scale]);
+
+  const ringStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: glow.value,
+  }));
+
+  return (
+    <View style={styles.breathWrap}>
+      <Animated.View style={[styles.breathOuter, ringStyle]} />
+      <View style={styles.breathInner}>
+        <Text style={styles.breathText}>·</Text>
+      </View>
+    </View>
+  );
+}
 
 export default function PracticaScreen() {
   const { t } = useTranslation();
@@ -91,7 +138,11 @@ export default function PracticaScreen() {
   };
 
   return (
-    <Screen mode={phase === 'checkin' || phase === 'done' ? 'day' : 'session'}>
+    <Screen mode="session">
+      <StatusBar style="light" />
+      <View style={styles.orbWrap} pointerEvents="none">
+        <PresencePulse active={phase === 'guide'} />
+      </View>
       <View
         style={[
           styles.wrap,
@@ -101,16 +152,17 @@ export default function PracticaScreen() {
           },
         ]}>
         {phase === 'checkin' ? (
-          <Animated.View entering={FadeIn.duration(500)} style={styles.phase}>
-            <Text style={styles.kicker}>{t(`practice.kinds.${practice.kind}`)}</Text>
-            <Headline>{t('practice.checkin.title')}</Headline>
-            <Body muted>{t('practice.checkin.intro')}</Body>
+          <Animated.View entering={FadeIn.duration(motion.enter)} style={styles.phase}>
+            <BrandMark light subtitle={t(`practice.kinds.${practice.kind}`)} />
+            <Headline light>{t('practice.checkin.title')}</Headline>
+            <Body light>{t('practice.checkin.intro')}</Body>
 
-            <Text style={styles.label}>{t('practice.checkin.stateLabel')}</Text>
+            <Text style={styles.labelLight}>{t('practice.checkin.stateLabel')}</Text>
             <View style={styles.row}>
               {states.map((label, i) => (
                 <Chip
                   key={label}
+                  tone="session"
                   label={label}
                   selected={stateIdx === i}
                   onPress={() => setStateIdx(i)}
@@ -118,11 +170,12 @@ export default function PracticaScreen() {
               ))}
             </View>
 
-            <Text style={styles.label}>{t('practice.checkin.centerLabel')}</Text>
+            <Text style={styles.labelLight}>{t('practice.checkin.centerLabel')}</Text>
             <View style={styles.row}>
               {centers.map((label, i) => (
                 <Chip
                   key={label}
+                  tone="session"
                   label={label}
                   selected={centerIdx === i}
                   onPress={() => setCenterIdx(i)}
@@ -140,14 +193,13 @@ export default function PracticaScreen() {
             <View style={styles.footer}>
               <Button
                 label={t('practice.checkin.begin')}
+                variant="lumen"
                 onPress={startGuide}
                 disabled={stateIdx == null || centerIdx == null}
               />
-              <Button
-                label={t('practice.close')}
-                variant="ghost"
-                onPress={() => router.back()}
-              />
+              <Pressable onPress={() => router.back()} style={styles.exit}>
+                <Text style={styles.exitText}>{t('practice.close')}</Text>
+              </Pressable>
             </View>
           </Animated.View>
         ) : null}
@@ -170,13 +222,7 @@ export default function PracticaScreen() {
             <Body light style={styles.guideBody}>
               {t(current.bodyKey)}
             </Body>
-            {current.breath ? (
-              <View style={styles.breathRing}>
-                <Text style={styles.breathText}>{t('practice.guide.breathe')}</Text>
-              </View>
-            ) : (
-              <View style={styles.focusDot} />
-            )}
+            {current.breath ? <BreathBeacon /> : <View style={styles.focusDot} />}
             <View style={styles.footer}>
               <Button
                 label={
@@ -184,7 +230,7 @@ export default function PracticaScreen() {
                     ? t('practice.guide.next')
                     : t('practice.guide.finish')
                 }
-                variant="session"
+                variant="lumen"
                 onPress={nextStep}
               />
             </View>
@@ -213,7 +259,7 @@ export default function PracticaScreen() {
             <View style={styles.footer}>
               <Button
                 label={t('practice.checkout.save')}
-                variant="session"
+                variant="lumen"
                 onPress={finish}
                 disabled={presence == null}
               />
@@ -222,17 +268,21 @@ export default function PracticaScreen() {
         ) : null}
 
         {phase === 'done' ? (
-          <Animated.View entering={FadeIn.duration(500)} style={styles.phase}>
-            <Text style={styles.kicker}>{t('practice.done.kicker')}</Text>
-            <Headline>{t('practice.done.title')}</Headline>
-            <Body muted>{t('practice.done.body')}</Body>
+          <Animated.View entering={FadeIn.duration(motion.enter)} style={styles.phase}>
+            <BrandMark light subtitle={t('practice.done.kicker')} />
+            <Headline light>{t('practice.done.title')}</Headline>
+            <Body light>{t('practice.done.body')}</Body>
             <View style={styles.footer}>
-              <Button label={t('practice.done.home')} onPress={() => router.replace('/')} />
               <Button
-                label={t('practice.done.observe')}
-                variant="ghost"
-                onPress={() => router.replace('/observar')}
+                label={t('practice.done.home')}
+                variant="lumen"
+                onPress={() => router.replace('/')}
               />
+              <Pressable
+                onPress={() => router.replace('/observar')}
+                style={styles.exit}>
+                <Text style={styles.exitText}>{t('practice.done.observe')}</Text>
+              </Pressable>
             </View>
           </Animated.View>
         ) : null}
@@ -248,6 +298,16 @@ export default function PracticaScreen() {
 }
 
 const styles = StyleSheet.create({
+  orbWrap: {
+    position: 'absolute',
+    right: -50,
+    top: '22%',
+    width: 220,
+    height: 220,
+    alignItems: 'center',
+    justifyContent: 'center',
+    opacity: 0.55,
+  },
   wrap: {
     flex: 1,
     paddingHorizontal: spacing.lg,
@@ -256,25 +316,20 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: spacing.md,
   },
-  kicker: {
-    fontFamily: fonts.uiMedium,
-    fontSize: 12,
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-    color: colors.focusSoft,
-  },
   sessionKicker: {
     fontFamily: fonts.uiMedium,
-    fontSize: 12,
-    letterSpacing: 1.5,
+    fontSize: 11,
+    letterSpacing: 2,
     textTransform: 'uppercase',
-    color: colors.accentSoft,
+    color: colors.accentHot,
   },
-  label: {
+  labelLight: {
     marginTop: spacing.sm,
     fontFamily: fonts.uiMedium,
-    fontSize: 13,
-    color: colors.inkSoft,
+    fontSize: 12,
+    letterSpacing: 1.1,
+    textTransform: 'uppercase',
+    color: 'rgba(246,247,244,0.62)',
   },
   row: {
     flexDirection: 'row',
@@ -285,22 +340,22 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
     padding: spacing.md,
     borderRadius: radii.md,
-    backgroundColor: colors.surface,
+    backgroundColor: 'rgba(246,247,244,0.05)',
     borderWidth: 1,
-    borderColor: colors.line,
-    gap: 4,
+    borderColor: 'rgba(232,215,166,0.22)',
+    gap: 6,
   },
   aimLabel: {
     fontFamily: fonts.uiMedium,
     fontSize: 11,
-    letterSpacing: 1.2,
+    letterSpacing: 1.4,
     textTransform: 'uppercase',
-    color: colors.focusSoft,
+    color: colors.accentSoft,
   },
   aimText: {
     fontFamily: fonts.displayItalic,
     fontSize: 22,
-    color: colors.ink,
+    color: colors.white,
     lineHeight: 28,
   },
   footer: {
@@ -308,51 +363,67 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   progressTrack: {
-    height: 4,
+    height: 3,
     borderRadius: 2,
-    backgroundColor: 'rgba(247,245,240,0.12)',
+    backgroundColor: 'rgba(247,245,240,0.1)',
     overflow: 'hidden',
     marginBottom: spacing.sm,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: colors.accentSoft,
+    backgroundColor: colors.accentHot,
   },
   guideBody: {
-    fontSize: 18,
-    lineHeight: 28,
+    fontSize: 19,
+    lineHeight: 30,
   },
-  breathRing: {
+  breathWrap: {
     alignSelf: 'center',
     marginTop: spacing.xl,
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    borderWidth: 1,
-    borderColor: 'rgba(220,200,148,0.45)',
+    width: 168,
+    height: 168,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  breathOuter: {
+    position: 'absolute',
+    width: 168,
+    height: 168,
+    borderRadius: 84,
+    borderWidth: 1.5,
+    borderColor: colors.accentHot,
+    backgroundColor: 'rgba(232,215,166,0.06)',
+  },
+  breathInner: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: 'rgba(232,215,166,0.14)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   breathText: {
-    fontFamily: fonts.ui,
-    fontSize: 14,
-    color: colors.accentSoft,
+    fontFamily: fonts.display,
+    fontSize: 28,
+    color: colors.accentHot,
+    marginTop: -4,
   },
   focusDot: {
     alignSelf: 'center',
     marginTop: spacing.xxl,
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: colors.accent,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: colors.accentHot,
   },
   exit: {
     alignSelf: 'center',
-    paddingVertical: 8,
+    paddingVertical: 10,
   },
   exitText: {
     fontFamily: fonts.ui,
     fontSize: 13,
-    color: 'rgba(247,245,240,0.55)',
+    letterSpacing: 0.2,
+    color: 'rgba(247,245,240,0.5)',
   },
 });

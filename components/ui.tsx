@@ -12,12 +12,51 @@ import Animated, {
   FadeInDown,
   useAnimatedStyle,
   useSharedValue,
+  withRepeat,
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import { colors, fonts, gradients, radii, spacing } from '@/constants/theme';
+import { colors, fonts, gradients, motion, radii, spacing } from '@/constants/theme';
+
+function Atmosphere({ mode }: { mode: 'day' | 'session' }) {
+  if (mode === 'session') {
+    return (
+      <>
+        <LinearGradient
+          colors={[...gradients.session]}
+          locations={[0, 0.55, 1]}
+          style={StyleSheet.absoluteFill}
+        />
+        <LinearGradient
+          colors={['rgba(181,154,91,0.12)', 'transparent']}
+          start={{ x: 0.15, y: 0 }}
+          end={{ x: 0.9, y: 0.7 }}
+          style={StyleSheet.absoluteFill}
+        />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <LinearGradient
+        colors={[...gradients.screen]}
+        locations={[0, 0.5, 1]}
+        style={StyleSheet.absoluteFill}
+      />
+      <LinearGradient
+        colors={[...gradients.screenWarmEdge]}
+        start={{ x: 1, y: 0 }}
+        end={{ x: 0.2, y: 0.55 }}
+        style={StyleSheet.absoluteFill}
+      />
+      <View style={styles.grainA} />
+      <View style={styles.grainB} />
+    </>
+  );
+}
 
 export function Screen({
   children,
@@ -28,7 +67,6 @@ export function Screen({
   style?: ViewStyle;
   mode?: 'day' | 'session';
 }) {
-  const g = mode === 'session' ? gradients.session : gradients.screen;
   return (
     <View
       style={[
@@ -36,21 +74,32 @@ export function Screen({
         mode === 'session' && { backgroundColor: colors.session },
         style,
       ]}>
-      <LinearGradient
-        colors={[...g]}
-        locations={[0, 0.45, 1]}
-        style={StyleSheet.absoluteFill}
-      />
+      <Atmosphere mode={mode} />
       {children}
     </View>
   );
 }
 
-export function BrandMark({ subtitle }: { subtitle?: string }) {
+export function BrandMark({
+  subtitle,
+  light,
+  large,
+}: {
+  subtitle?: string;
+  light?: boolean;
+  large?: boolean;
+}) {
   return (
     <View style={styles.brandWrap}>
-      <Text style={styles.brand}>The Work</Text>
-      {subtitle ? <Text style={styles.brandSub}>{subtitle}</Text> : null}
+      <Text style={[styles.brand, large && styles.brandLarge, light && { color: colors.white }]}>
+        The Work
+      </Text>
+      <View style={[styles.brandRule, light && { backgroundColor: colors.accentHot }]} />
+      {subtitle ? (
+        <Text style={[styles.brandSub, light && { color: 'rgba(246,247,244,0.72)' }]}>
+          {subtitle}
+        </Text>
+      ) : null}
     </View>
   );
 }
@@ -63,9 +112,7 @@ export function Headline({
   light?: boolean;
 }) {
   return (
-    <Text style={[styles.headline, light && { color: colors.white }]}>
-      {children}
-    </Text>
+    <Text style={[styles.headline, light && { color: colors.white }]}>{children}</Text>
   );
 }
 
@@ -85,7 +132,7 @@ export function Body({
       style={[
         styles.body,
         muted && styles.muted,
-        light && { color: 'rgba(247,245,240,0.78)' },
+        light && { color: 'rgba(246,247,244,0.78)' },
         style,
       ]}>
       {children}
@@ -103,7 +150,9 @@ export function Section({
   delay?: number;
 }) {
   return (
-    <Animated.View entering={FadeInDown.delay(delay).duration(520)} style={styles.section}>
+    <Animated.View
+      entering={FadeInDown.delay(delay).duration(motion.enter)}
+      style={styles.section}>
       {title ? <Text style={styles.sectionTitle}>{title}</Text> : null}
       {children}
     </Animated.View>
@@ -118,7 +167,7 @@ export function Button({
 }: {
   label: string;
   onPress: () => void;
-  variant?: 'primary' | 'ghost' | 'gold' | 'session';
+  variant?: 'primary' | 'ghost' | 'gold' | 'session' | 'lumen';
   disabled?: boolean;
 }) {
   return (
@@ -138,8 +187,9 @@ export function Button({
         variant === 'ghost' && styles.btnGhost,
         variant === 'gold' && styles.btnGold,
         variant === 'session' && styles.btnSession,
-        pressed && { opacity: 0.86, transform: [{ scale: 0.985 }] },
-        disabled && { opacity: 0.45 },
+        variant === 'lumen' && styles.btnLumen,
+        pressed && { opacity: 0.88, transform: [{ scale: 0.987 }] },
+        disabled && { opacity: 0.4 },
       ]}>
       <Text
         style={[
@@ -147,6 +197,7 @@ export function Button({
           variant === 'ghost' && { color: colors.focus },
           variant === 'gold' && { color: colors.ink },
           variant === 'session' && { color: colors.session },
+          variant === 'lumen' && { color: colors.ink },
         ]}>
         {label}
       </Text>
@@ -187,7 +238,7 @@ export function Chip({
       <Text
         style={[
           styles.chipLabel,
-          session && { color: 'rgba(247,245,240,0.8)' },
+          session && { color: 'rgba(246,247,244,0.82)' },
           selected && styles.chipLabelSelected,
           selected && session && { color: colors.session },
         ]}>
@@ -199,17 +250,27 @@ export function Chip({
 
 export function PresencePulse({ active }: { active: boolean }) {
   const scale = useSharedValue(1);
-  const opacity = useSharedValue(0.28);
+  const opacity = useSharedValue(0.22);
 
   useEffect(() => {
-    if (!active) return;
+    if (!active) {
+      opacity.value = withRepeat(
+        withSequence(
+          withTiming(0.28, { duration: 1600 }),
+          withTiming(0.14, { duration: 1600 }),
+        ),
+        -1,
+        true,
+      );
+      return;
+    }
     scale.value = withSequence(
-      withTiming(1.1, { duration: 700 }),
+      withTiming(1.12, { duration: 700 }),
       withTiming(1, { duration: 900 }),
     );
     opacity.value = withSequence(
-      withTiming(0.65, { duration: 700 }),
-      withTiming(0.22, { duration: 900 }),
+      withTiming(0.55, { duration: 700 }),
+      withTiming(0.18, { duration: 900 }),
     );
   }, [active, opacity, scale]);
 
@@ -230,46 +291,76 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg,
   },
+  grainA: {
+    position: 'absolute',
+    top: -40,
+    right: -30,
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    backgroundColor: 'rgba(181, 154, 91, 0.07)',
+  },
+  grainB: {
+    position: 'absolute',
+    bottom: 120,
+    left: -60,
+    width: 260,
+    height: 260,
+    borderRadius: 130,
+    backgroundColor: 'rgba(28, 61, 54, 0.05)',
+  },
   brandWrap: {
-    gap: 4,
+    gap: 10,
     marginBottom: spacing.sm,
   },
   brand: {
     fontFamily: fonts.display,
-    fontSize: 44,
-    lineHeight: 48,
+    fontSize: 48,
+    lineHeight: 50,
     color: colors.ink,
-    letterSpacing: 0.4,
+    letterSpacing: 0.2,
+  },
+  brandLarge: {
+    fontSize: 56,
+    lineHeight: 58,
+  },
+  brandRule: {
+    width: 36,
+    height: 2,
+    backgroundColor: colors.accent,
+    borderRadius: 1,
   },
   brandSub: {
     fontFamily: fonts.bodyItalic,
     fontSize: 15,
+    lineHeight: 22,
     color: colors.muted,
+    maxWidth: 280,
   },
   headline: {
     fontFamily: fonts.display,
-    fontSize: 30,
-    lineHeight: 36,
+    fontSize: 34,
+    lineHeight: 38,
     color: colors.ink,
     marginBottom: spacing.sm,
   },
   body: {
     fontFamily: fonts.body,
     fontSize: 16,
-    lineHeight: 24,
+    lineHeight: 26,
     color: colors.inkSoft,
   },
   muted: {
     color: colors.muted,
   },
   section: {
-    marginBottom: spacing.lg,
+    marginBottom: spacing.xl,
     gap: spacing.sm,
   },
   sectionTitle: {
     fontFamily: fonts.uiMedium,
-    fontSize: 12,
-    letterSpacing: 1.4,
+    fontSize: 11,
+    letterSpacing: 1.8,
     textTransform: 'uppercase',
     color: colors.focusSoft,
     marginBottom: 2,
@@ -292,17 +383,21 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accentSoft,
   },
   btnSession: {
-    backgroundColor: colors.accentSoft,
+    backgroundColor: colors.accentHot,
+  },
+  btnLumen: {
+    backgroundColor: colors.accentHot,
   },
   btnLabel: {
     fontFamily: fonts.uiMedium,
     fontSize: 16,
+    letterSpacing: 0.2,
     color: colors.white,
   },
   field: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceRaised,
     borderWidth: 1,
-    borderColor: colors.line,
+    borderColor: colors.lineSoft,
     borderRadius: radii.md,
     paddingHorizontal: 14,
     paddingVertical: 12,
@@ -314,25 +409,25 @@ const styles = StyleSheet.create({
   chip: {
     borderWidth: 1,
     borderColor: colors.line,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceRaised,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    borderRadius: radii.pill,
+    borderRadius: radii.md,
   },
   chipSession: {
-    borderColor: 'rgba(247,245,240,0.22)',
-    backgroundColor: 'rgba(247,245,240,0.06)',
+    borderColor: 'rgba(246,247,244,0.16)',
+    backgroundColor: 'rgba(246,247,244,0.05)',
   },
   chipSelected: {
     backgroundColor: colors.focus,
     borderColor: colors.focus,
   },
   chipSessionSelected: {
-    backgroundColor: colors.accentSoft,
-    borderColor: colors.accentSoft,
+    backgroundColor: colors.accentHot,
+    borderColor: colors.accentHot,
   },
   chipLabel: {
-    fontFamily: fonts.ui,
+    fontFamily: fonts.uiMedium,
     fontSize: 14,
     color: colors.inkSoft,
   },
@@ -341,10 +436,10 @@ const styles = StyleSheet.create({
   },
   pulse: {
     position: 'absolute',
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: colors.accent,
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    backgroundColor: colors.accentHot,
   },
   empty: {
     fontFamily: fonts.bodyItalic,

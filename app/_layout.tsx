@@ -3,10 +3,11 @@ import {
   CormorantGaramond_600SemiBold,
 } from '@expo-google-fonts/cormorant-garamond';
 import {
-  DMSans_400Regular,
-  DMSans_500Medium,
-  DMSans_700Bold,
-} from '@expo-google-fonts/dm-sans';
+  Manrope_400Regular,
+  Manrope_500Medium,
+  Manrope_600SemiBold,
+  Manrope_700Bold,
+} from '@expo-google-fonts/manrope';
 import {
   Literata_400Regular,
   Literata_400Regular_Italic,
@@ -40,9 +41,10 @@ export default function RootLayout() {
     Literata_400Regular,
     Literata_400Regular_Italic,
     Literata_500Medium,
-    DMSans_400Regular,
-    DMSans_500Medium,
-    DMSans_700Bold,
+    Manrope_400Regular,
+    Manrope_500Medium,
+    Manrope_600SemiBold,
+    Manrope_700Bold,
   });
   const [i18nReady, setI18nReady] = useState(false);
 
