@@ -1,21 +1,21 @@
 {
   "expo": {
-    "name": "Recuérdate",
-    "slug": "recuerdate",
+    "name": "The Work",
+    "slug": "the-work",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "recuerdate",
+    "scheme": "thework",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "app.recuerdate.trabajo",
+      "bundleIdentifier": "app.thework.practice",
       "infoPlist": {
         "UIBackgroundModes": ["remote-notification"]
       }
     },
     "android": {
-      "package": "app.recuerdate.trabajo",
+      "package": "app.thework.practice",
       "adaptiveIcon": {
         "backgroundColor": "#E6E9E4",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

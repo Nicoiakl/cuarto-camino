@@ -50,7 +50,7 @@ export default function HoyScreen() {
         ]}
         showsVerticalScrollIndicator={false}>
         <Animated.View entering={FadeIn.duration(700)}>
-          <BrandMark subtitle="Espacio para el Trabajo · Cuarto Camino" />
+          <BrandMark subtitle="Cuarto Camino · espacio para la conciencia" />
         </Animated.View>
 
         <Animated.View entering={FadeInUp.delay(120).duration(650)} style={styles.presenceBlock}>

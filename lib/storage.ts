@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const KEY = 'recuerdate.work.v1';
+const KEY = 'thework.v1';
 
 export async function loadJSON<T>(fallback: T): Promise<T> {
   try {

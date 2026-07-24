@@ -41,7 +41,7 @@ export function Screen({
 export function BrandMark({ subtitle }: { subtitle?: string }) {
   return (
     <View style={styles.brandWrap}>
-      <Text style={styles.brand}>Recuérdate</Text>
+      <Text style={styles.brand}>The Work</Text>
       {subtitle ? <Text style={styles.brandSub}>{subtitle}</Text> : null}
     </View>
   );

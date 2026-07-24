@@ -43,7 +43,7 @@ export async function scheduleStops(settings: StopSettings): Promise<number> {
   while (cursor < end && count < 16) {
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: 'Recuérdate',
+        title: 'The Work',
         body: '¿Estás aquí? Un momento de presencia.',
         sound: true,
       },

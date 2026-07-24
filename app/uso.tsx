@@ -82,8 +82,8 @@ export default function UsoScreen() {
 
         <Section title="Cómo leerlo">
           <Body muted>
-            Si una pantalla casi no aparece, quizás no pertenece a tu Trabajo. Si
-            “Recuérdate” y Observar dominan, el resto puede volverse secundario.
+            Si una pantalla casi no aparece, quizás no pertenece a tu práctica. Si
+            presencia y Observar dominan, el resto puede volverse secundario.
           </Body>
         </Section>
       </ScrollView>
