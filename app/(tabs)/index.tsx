@@ -16,7 +16,6 @@ import Animated, {
   interpolate,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -48,7 +47,7 @@ import { practiceOfDay } from '@/lib/practice';
 import { quoteOfDay, quoteSource, quoteText } from '@/lib/quotes';
 
 const { height: SCREEN_H } = Dimensions.get('window');
-const easeOut = Easing.out(Easing.cubic);
+const tidal = Easing.inOut(Easing.sin);
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export default function HoyScreen() {
@@ -67,7 +66,7 @@ export default function HoyScreen() {
 
   const ctaPress = useSharedValue(0);
   const ctaStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: interpolate(ctaPress.value, [0, 1], [1, 0.978]) }],
+    transform: [{ scale: interpolate(ctaPress.value, [0, 1], [1, 0.985]) }],
   }));
 
   useEffect(() => {
@@ -79,7 +78,7 @@ export default function HoyScreen() {
     return () => setStatusBarStyle('dark');
   }, []);
 
-  const heroMin = Math.max(560, SCREEN_H * 0.82);
+  const heroMin = Math.max(560, SCREEN_H * 0.84);
 
   return (
     <Screen>
@@ -89,32 +88,33 @@ export default function HoyScreen() {
         <View
           style={[
             styles.heroViewport,
-            { minHeight: heroMin, paddingTop: insets.top + 22 },
+            { minHeight: heroMin, paddingTop: insets.top + 24 },
           ]}>
           <LinearGradient
             colors={[...gradients.hero]}
-            locations={[0, 0.52, 1]}
+            locations={[0, 0.55, 1]}
             style={StyleSheet.absoluteFill}
           />
           <LinearGradient
             colors={[...gradients.heroSheen]}
-            locations={[0, 0.45, 1]}
-            start={{ x: 0.15, y: 0 }}
-            end={{ x: 0.95, y: 0.85 }}
+            locations={[0, 0.4, 1]}
+            start={{ x: 0.3, y: 0 }}
+            end={{ x: 0.7, y: 1 }}
             style={StyleSheet.absoluteFill}
           />
-          <View style={styles.heroMist} />
+          {/* lagoon reflection band */}
+          <View style={styles.lagoonBand} />
           <View style={styles.heroOrbWrap} pointerEvents="none">
             <PresencePulse active={false} />
           </View>
 
           <Animated.View
-            entering={FadeIn.duration(motion.slow).easing(easeOut)}
+            entering={FadeIn.duration(motion.slow).easing(tidal)}
             style={styles.heroInner}>
             <BrandMark large light subtitle={t('brand.subtitle')} />
 
             <Animated.View
-              entering={FadeInUp.delay(180).duration(motion.enter).easing(easeOut)}
+              entering={FadeInUp.delay(280).duration(motion.enter).easing(tidal)}
               style={styles.heroCopy}>
               <Text style={styles.heroKicker}>
                 {practicedToday
@@ -127,26 +127,29 @@ export default function HoyScreen() {
               <Text style={styles.heroBody}>
                 {t(`practice.summaries.${practice.kind}`)}
               </Text>
-              <View style={styles.metaRow}>
-                <View style={styles.metaDot} />
-                <Text style={styles.heroMeta}>
-                  {t('home.practiceMeta', { minutes: practice.minutes })}
-                </Text>
-              </View>
+              <Text style={styles.heroMeta}>
+                {t('home.practiceMeta', { minutes: practice.minutes })}
+              </Text>
             </Animated.View>
 
             <Animated.View
-              entering={FadeInUp.delay(320).duration(motion.enter).easing(easeOut)}>
+              entering={FadeInUp.delay(520).duration(motion.enter).easing(tidal)}>
               <AnimatedPressable
                 onPressIn={() => {
-                  ctaPress.value = withTiming(1, { duration: motion.press });
+                  ctaPress.value = withTiming(1, {
+                    duration: motion.press,
+                    easing: tidal,
+                  });
                 }}
                 onPressOut={() => {
-                  ctaPress.value = withSpring(0, motion.spring);
+                  ctaPress.value = withTiming(0, {
+                    duration: 450,
+                    easing: tidal,
+                  });
                 }}
                 onPress={async () => {
                   try {
-                    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                    await Haptics.selectionAsync();
                   } catch {
                     /* web */
                   }
@@ -174,7 +177,7 @@ export default function HoyScreen() {
         </View>
 
         <View style={styles.below}>
-          <Section title={t('home.aimToday')} delay={60}>
+          <Section title={t('home.aimToday')} delay={80}>
             {todayAim?.text ? (
               <Text style={styles.aimText}>{todayAim.text}</Text>
             ) : (
@@ -189,14 +192,14 @@ export default function HoyScreen() {
 
           <Hairline />
 
-          <Section title={t('home.quoteOfDay')} delay={120}>
+          <Section title={t('home.quoteOfDay')} delay={160}>
             <Text style={styles.quote}>“{quoteText(quote.id)}”</Text>
             <Text style={styles.quoteSource}>{quoteSource()}</Text>
           </Section>
 
           <Hairline />
 
-          <Section title={t('home.dayClose')} delay={180}>
+          <Section title={t('home.dayClose')} delay={240}>
             <Body muted>
               {todayReview ? t('home.reviewExists') : t('home.reviewPrompt')}
             </Body>
@@ -226,25 +229,24 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     overflow: 'hidden',
   },
-  heroMist: {
+  lagoonBand: {
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    height: 120,
-    backgroundColor: 'transparent',
-    borderBottomWidth: 0,
-    opacity: 1,
+    height: '38%',
+    backgroundColor: 'rgba(20, 48, 56, 0.35)',
   },
   heroOrbWrap: {
     position: 'absolute',
-    right: -48,
-    top: '26%',
-    width: 240,
-    height: 240,
+    alignSelf: 'center',
+    left: '18%',
+    bottom: '22%',
+    width: 260,
+    height: 260,
     alignItems: 'center',
     justifyContent: 'center',
-    opacity: 0.85,
+    opacity: 0.75,
   },
   heroInner: {
     flex: 1,
@@ -252,7 +254,7 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.sm,
   },
   heroCopy: {
-    gap: 12,
+    gap: 14,
     marginTop: spacing.xxxl,
     marginBottom: spacing.xl,
   },
@@ -266,37 +268,24 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     fontFamily: fonts.display,
-    fontSize: 46,
+    fontSize: 44,
     lineHeight: 50,
     color: colors.white,
-    letterSpacing: 0.15,
+    letterSpacing: 0.25,
   },
   heroBody: {
     fontFamily: fonts.body,
     fontSize: 17.5,
-    lineHeight: 28,
+    lineHeight: 29,
     color: colors.whiteMuted,
-    maxWidth: 318,
-    marginTop: 2,
-  },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginTop: 8,
-  },
-  metaDot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: colors.accentSoft,
-    opacity: 0.8,
+    maxWidth: 310,
   },
   heroMeta: {
     fontFamily: fonts.ui,
     fontSize: type.meta.size,
     letterSpacing: type.meta.tracking,
     color: colors.whiteSoft,
+    marginTop: 4,
   },
   heroCtaShell: {
     borderRadius: radii.md,
@@ -307,7 +296,7 @@ const styles = StyleSheet.create({
   },
   heroCta: {
     alignSelf: 'stretch',
-    minHeight: 58,
+    minHeight: 56,
     paddingVertical: 18,
     alignItems: 'center',
     justifyContent: 'center',
@@ -318,12 +307,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 1,
-    backgroundColor: 'rgba(255,255,255,0.42)',
+    backgroundColor: 'rgba(255,255,255,0.3)',
   },
   heroCtaText: {
-    fontFamily: fonts.uiSemi,
+    fontFamily: fonts.uiMedium,
     fontSize: 16,
-    letterSpacing: 0.55,
+    letterSpacing: 0.6,
     color: colors.ink,
   },
   below: {
@@ -333,26 +322,25 @@ const styles = StyleSheet.create({
   aimText: {
     fontFamily: fonts.displayItalic,
     fontSize: 28,
-    lineHeight: 36,
+    lineHeight: 38,
     color: colors.ink,
-    letterSpacing: 0.1,
+    letterSpacing: 0.15,
   },
   quote: {
     fontFamily: fonts.displayItalic,
     fontSize: 26,
-    lineHeight: 36,
+    lineHeight: 38,
     color: colors.ink,
-    letterSpacing: 0.05,
   },
   quoteSource: {
     fontFamily: fonts.ui,
     fontSize: type.meta.size,
     letterSpacing: type.meta.tracking,
     color: colors.muted,
-    marginTop: 4,
+    marginTop: 6,
   },
   rowActions: {
     gap: 12,
-    marginTop: 4,
+    marginTop: 6,
   },
 });

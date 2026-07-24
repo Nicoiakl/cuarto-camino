@@ -30,55 +30,55 @@ import { useWork } from '@/context/WorkContext';
 import { practiceOfDay } from '@/lib/practice';
 
 type Phase = 'checkin' | 'guide' | 'checkout' | 'done';
-const easeOut = Easing.out(Easing.cubic);
+const tidal = Easing.inOut(Easing.sin);
 
+/** Like watching a quiet fire / lagoon breath */
 function BreathBeacon({ label }: { label: string }) {
-  const scale = useSharedValue(0.88);
-  const glow = useSharedValue(0.24);
-  const inner = useSharedValue(0.9);
+  const scale = useSharedValue(0.9);
+  const glow = useSharedValue(0.2);
+  const core = useSharedValue(0.92);
 
   useEffect(() => {
+    const d = motion.breath;
     scale.value = withRepeat(
       withSequence(
-        withTiming(1.1, { duration: 3000, easing: easeOut }),
-        withTiming(0.88, { duration: 3000, easing: easeOut }),
+        withTiming(1.08, { duration: d, easing: tidal }),
+        withTiming(0.9, { duration: d, easing: tidal }),
       ),
       -1,
       false,
     );
     glow.value = withRepeat(
       withSequence(
-        withTiming(0.52, { duration: 3000, easing: easeOut }),
-        withTiming(0.2, { duration: 3000, easing: easeOut }),
+        withTiming(0.45, { duration: d, easing: tidal }),
+        withTiming(0.16, { duration: d, easing: tidal }),
       ),
       -1,
       false,
     );
-    inner.value = withRepeat(
+    core.value = withRepeat(
       withSequence(
-        withTiming(1.06, { duration: 3000, easing: easeOut }),
-        withTiming(0.9, { duration: 3000, easing: easeOut }),
+        withTiming(1.05, { duration: d, easing: tidal }),
+        withTiming(0.92, { duration: d, easing: tidal }),
       ),
       -1,
       false,
     );
-  }, [glow, inner, scale]);
+  }, [core, glow, scale]);
 
   const ringStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
     opacity: glow.value,
   }));
   const coreStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: inner.value }],
+    transform: [{ scale: core.value }],
   }));
 
   return (
     <View style={styles.breathWrap}>
       <Animated.View style={[styles.breathHalo, ringStyle]} />
       <Animated.View style={[styles.breathOuter, ringStyle]} />
-      <Animated.View style={[styles.breathInner, coreStyle]}>
-        <Text style={styles.breathDot}>·</Text>
-      </Animated.View>
+      <Animated.View style={[styles.breathInner, coreStyle]} />
       <Text style={styles.breathLabel}>{label}</Text>
     </View>
   );
@@ -88,7 +88,10 @@ function ProgressBar({ value }: { value: number }) {
   const [trackW, setTrackW] = useState(0);
   const progress = useSharedValue(0);
   useEffect(() => {
-    progress.value = withTiming(value, { duration: 520, easing: easeOut });
+    progress.value = withTiming(value, {
+      duration: 900,
+      easing: tidal,
+    });
   }, [value, progress]);
   const fillStyle = useAnimatedStyle(() => ({
     width: Math.max(0, progress.value * trackW),
@@ -152,7 +155,7 @@ export default function PracticaScreen() {
 
   const nextStep = async () => {
     try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      await Haptics.selectionAsync();
     } catch {
       /* web */
     }
@@ -200,7 +203,7 @@ export default function PracticaScreen() {
         ]}>
         {phase === 'checkin' ? (
           <Animated.View
-            entering={FadeIn.duration(motion.enter).easing(easeOut)}
+            entering={FadeIn.duration(motion.enter).easing(tidal)}
             style={styles.phase}>
             <BrandMark light subtitle={t(`practice.kinds.${practice.kind}`)} />
             <Headline light>{t('practice.checkin.title')}</Headline>
@@ -258,7 +261,7 @@ export default function PracticaScreen() {
         {phase === 'guide' && current ? (
           <Animated.View
             key={step}
-            entering={FadeInUp.duration(560).easing(easeOut)}
+            entering={FadeInUp.duration(900).easing(tidal)}
             style={styles.phase}>
             <ProgressBar value={progress} />
             <Text style={styles.sessionKicker}>
@@ -292,7 +295,7 @@ export default function PracticaScreen() {
 
         {phase === 'checkout' ? (
           <Animated.View
-            entering={FadeIn.duration(520).easing(easeOut)}
+            entering={FadeIn.duration(motion.enter).easing(tidal)}
             style={styles.phase}>
             <Text style={styles.sessionKicker}>{t('practice.checkout.kicker')}</Text>
             <Headline light>{t('practice.checkout.title')}</Headline>
@@ -324,7 +327,7 @@ export default function PracticaScreen() {
 
         {phase === 'done' ? (
           <Animated.View
-            entering={FadeIn.duration(motion.enter).easing(easeOut)}
+            entering={FadeIn.duration(motion.slow).easing(tidal)}
             style={styles.phase}>
             <BrandMark light subtitle={t('practice.done.kicker')} />
             <Headline light>{t('practice.done.title')}</Headline>
@@ -357,13 +360,13 @@ export default function PracticaScreen() {
 const styles = StyleSheet.create({
   orbWrap: {
     position: 'absolute',
-    right: -56,
-    top: '20%',
-    width: 250,
-    height: 250,
+    left: '15%',
+    bottom: '16%',
+    width: 280,
+    height: 280,
     alignItems: 'center',
     justifyContent: 'center',
-    opacity: 0.5,
+    opacity: 0.45,
   },
   wrap: {
     flex: 1,
@@ -384,7 +387,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
     fontFamily: fonts.uiMedium,
     fontSize: type.label.size,
-    letterSpacing: 1.4,
+    letterSpacing: 1.6,
     textTransform: 'uppercase',
     color: colors.whiteSoft,
   },
@@ -397,15 +400,15 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
     padding: spacing.md,
     borderRadius: radii.md,
-    backgroundColor: 'rgba(248,249,246,0.04)',
+    backgroundColor: 'rgba(243,247,246,0.04)',
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: 'rgba(233,216,168,0.28)',
+    borderColor: 'rgba(226,184,154,0.22)',
     gap: 8,
   },
   aimLabel: {
     fontFamily: fonts.uiMedium,
     fontSize: type.label.size,
-    letterSpacing: 1.5,
+    letterSpacing: 1.6,
     textTransform: 'uppercase',
     color: colors.accentSoft,
   },
@@ -413,16 +416,16 @@ const styles = StyleSheet.create({
     fontFamily: fonts.displayItalic,
     fontSize: 24,
     color: colors.white,
-    lineHeight: 30,
+    lineHeight: 32,
   },
   footer: {
     marginTop: 'auto',
-    gap: 12,
+    gap: 14,
   },
   progressTrack: {
     height: 2,
     borderRadius: 1,
-    backgroundColor: 'rgba(248,249,246,0.1)',
+    backgroundColor: 'rgba(243,247,246,0.08)',
     overflow: 'hidden',
     marginBottom: spacing.sm,
   },
@@ -438,63 +441,49 @@ const styles = StyleSheet.create({
   breathWrap: {
     alignSelf: 'center',
     marginTop: spacing.xl,
-    width: 190,
-    height: 210,
+    width: 200,
+    height: 220,
     alignItems: 'center',
     justifyContent: 'center',
   },
   breathHalo: {
     position: 'absolute',
-    width: 190,
-    height: 190,
-    borderRadius: 95,
-    backgroundColor: 'rgba(233,216,168,0.06)',
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: 'rgba(226,184,154,0.08)',
   },
   breathOuter: {
     position: 'absolute',
-    width: 158,
-    height: 158,
-    borderRadius: 79,
+    width: 150,
+    height: 150,
+    borderRadius: 75,
     borderWidth: 1,
-    borderColor: colors.accentHot,
-    backgroundColor: 'rgba(233,216,168,0.05)',
+    borderColor: 'rgba(226,184,154,0.55)',
+    backgroundColor: 'rgba(122,154,160,0.06)',
   },
   breathInner: {
-    width: 58,
-    height: 58,
-    borderRadius: 29,
-    backgroundColor: 'rgba(233,216,168,0.16)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(233,216,168,0.4)',
-  },
-  breathDot: {
-    fontFamily: fonts.display,
-    fontSize: 30,
-    color: colors.accentHot,
-    marginTop: -6,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: 'rgba(226,184,154,0.35)',
   },
   breathLabel: {
     position: 'absolute',
     bottom: 0,
     fontFamily: fonts.ui,
     fontSize: type.meta.size,
-    letterSpacing: 1.2,
+    letterSpacing: 1.6,
     textTransform: 'uppercase',
     color: colors.whiteSoft,
   },
   focusDot: {
     alignSelf: 'center',
     marginTop: spacing.xxl,
-    width: 8,
-    height: 8,
+    width: 7,
+    height: 7,
     borderRadius: 4,
     backgroundColor: colors.accentHot,
-    shadowColor: colors.accentHot,
-    shadowOpacity: 0.45,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 0 },
   },
   exit: {
     alignSelf: 'center',
@@ -503,7 +492,7 @@ const styles = StyleSheet.create({
   exitText: {
     fontFamily: fonts.ui,
     fontSize: 13,
-    letterSpacing: 0.35,
-    color: 'rgba(248,249,246,0.48)',
+    letterSpacing: 0.4,
+    color: 'rgba(243,247,246,0.42)',
   },
 });

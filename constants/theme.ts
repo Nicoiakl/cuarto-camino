@@ -1,51 +1,61 @@
 /**
- * LUMEN Editorial — quiet brilliance, pixel-level craft.
- * Cool mist + deep atelier ink + champagne. No wellness clichés.
+ * STILL — lagoon at dusk, quiet fire on the shore.
+ * Cool water mist by day; deep pool + soft ember in session.
+ * Motion is tidal and slow, like breath or flame.
  */
 export const colors = {
-  bg: '#E7ECE8',
-  bgMid: '#D8E0DA',
-  bgDeep: '#C8D1CB',
-  wash: '#F7F9F6',
-  surface: '#EFF2EE',
-  surfaceRaised: '#FBFCFA',
-  ink: '#0C1311',
-  inkSoft: '#1F2A26',
-  muted: '#5A655F',
-  line: '#AEB8B1',
-  lineSoft: 'rgba(12, 19, 17, 0.075)',
-  lineHair: 'rgba(12, 19, 17, 0.12)',
-  focus: '#14352F',
-  focusSoft: '#254F45',
-  accent: '#C2A668',
-  accentSoft: '#D7C496',
-  accentHot: '#E9D8A8',
-  accentDeep: '#9E8550',
-  session: '#070F0C',
-  sessionMid: '#0F1B17',
-  sessionSoft: '#183530',
+  bg: '#E3EAE9',
+  bgMid: '#D0DBDA',
+  bgDeep: '#BCC9C8',
+  wash: '#F2F6F5',
+  surface: '#E8EFEE',
+  surfaceRaised: '#F7FAF9',
+  ink: '#0B1518',
+  inkSoft: '#1C2C31',
+  muted: '#5A6B6E',
+  line: '#A8B6B7',
+  lineSoft: 'rgba(11, 21, 24, 0.07)',
+  lineHair: 'rgba(11, 21, 24, 0.11)',
+  focus: '#1A3A42',
+  focusSoft: '#2A515A',
+  /** quiet fire — warm, never loud */
+  accent: '#C4926E',
+  accentSoft: '#D4A892',
+  accentHot: '#E2B89A',
+  accentDeep: '#A67452',
+  session: '#071216',
+  sessionMid: '#0B1A20',
+  sessionSoft: '#143038',
   danger: '#7A3535',
-  white: '#F8F9F6',
-  whiteMuted: 'rgba(248, 249, 246, 0.72)',
-  whiteSoft: 'rgba(248, 249, 246, 0.55)',
+  white: '#F3F7F6',
+  whiteMuted: 'rgba(243, 247, 246, 0.74)',
+  whiteSoft: 'rgba(243, 247, 246, 0.52)',
+  water: '#7A9AA0',
+  mist: 'rgba(180, 205, 208, 0.35)',
   // legacy aliases
-  pine: '#14352F',
-  pineSoft: '#254F45',
-  gold: '#C2A668',
-  goldSoft: '#D7C496',
+  pine: '#1A3A42',
+  pineSoft: '#2A515A',
+  gold: '#C4926E',
+  goldSoft: '#D4A892',
 };
 
 export const gradients = {
-  screen: ['#F6F9F5', '#E7ECE8', '#CCD5CE'] as const,
-  screenWarmEdge: ['rgba(233, 216, 168, 0.22)', 'rgba(231, 236, 232, 0)'] as const,
-  hero: ['#070F0C', '#0F1B17', '#183530'] as const,
-  heroSheen: ['rgba(233, 216, 168, 0.2)', 'rgba(233, 216, 168, 0.02)', 'transparent'] as const,
-  session: ['#070F0C', '#0D1814', '#183530'] as const,
-  sessionSheen: ['rgba(233, 216, 168, 0.14)', 'transparent'] as const,
-  lumenBtn: ['#F0E2B8', '#E0C98A', '#CDB574'] as const,
-  primaryBtn: ['#1A4038', '#14352F', '#0F2A25'] as const,
-  goldBtn: ['#E4D3A4', '#D4C08E'] as const,
-  beacon: ['#183530', '#0F1B17'] as const,
+  screen: ['#F1F6F5', '#E3EAE9', '#C5D2D1'] as const,
+  screenWarmEdge: ['rgba(226, 184, 154, 0.18)', 'rgba(227, 234, 233, 0)'] as const,
+  /** deep lagoon — looking into still water */
+  hero: ['#071216', '#0B1A20', '#143038'] as const,
+  heroSheen: [
+    'rgba(122, 154, 160, 0.22)',
+    'rgba(226, 184, 154, 0.12)',
+    'transparent',
+  ] as const,
+  session: ['#071216', '#0A171C', '#143038'] as const,
+  sessionSheen: ['rgba(226, 184, 154, 0.1)', 'transparent'] as const,
+  /** ember — soft fire */
+  lumenBtn: ['#E8C4A8', '#D4A07C', '#C08A62'] as const,
+  primaryBtn: ['#244850', '#1A3A42', '#132E34'] as const,
+  goldBtn: ['#E0BCA0', '#D0A486'] as const,
+  beacon: ['#143038', '#0B1A20'] as const,
 };
 
 export const spacing = {
@@ -62,9 +72,9 @@ export const spacing = {
 export const radii = {
   xs: 6,
   sm: 10,
-  md: 14,
-  lg: 18,
-  xl: 26,
+  md: 16,
+  lg: 22,
+  xl: 28,
   pill: 999,
 };
 
@@ -81,18 +91,18 @@ export const fonts = {
 };
 
 export const type = {
-  brand: { size: 52, line: 54, tracking: 0.4 },
-  brandLg: { size: 60, line: 62, tracking: 0.3 },
-  display: { size: 36, line: 40, tracking: 0.15 },
+  brand: { size: 52, line: 54, tracking: 0.6 },
+  brandLg: { size: 58, line: 60, tracking: 0.5 },
+  display: { size: 34, line: 40, tracking: 0.2 },
   displaySm: { size: 28, line: 34, tracking: 0.1 },
-  body: { size: 16.5, line: 27 },
-  bodyLg: { size: 18, line: 30 },
-  ui: { size: 15, line: 20, tracking: 0.15 },
-  label: { size: 11, line: 14, tracking: 2.1 },
-  meta: { size: 12.5, line: 17, tracking: 0.35 },
+  body: { size: 16.5, line: 28 },
+  bodyLg: { size: 18.5, line: 31 },
+  ui: { size: 15, line: 20, tracking: 0.2 },
+  label: { size: 11, line: 14, tracking: 2.4 },
+  meta: { size: 12.5, line: 17, tracking: 0.4 },
 };
 
-/** Soft, editorial elevation — never stacked neon glows */
+/** Soft depth — mist and ember, never neon */
 export const shadows = {
   none: {
     shadowColor: 'transparent',
@@ -102,46 +112,48 @@ export const shadows = {
     elevation: 0,
   },
   soft: {
-    shadowColor: '#0C1311',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.07,
-    shadowRadius: 16,
-    elevation: 3,
+    shadowColor: '#0B1518',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.06,
+    shadowRadius: 20,
+    elevation: 2,
   },
   lift: {
-    shadowColor: '#0C1311',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.12,
-    shadowRadius: 22,
-    elevation: 6,
+    shadowColor: '#0B1518',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.1,
+    shadowRadius: 28,
+    elevation: 5,
   },
   press: {
-    shadowColor: '#0C1311',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
+    shadowColor: '#0B1518',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.07,
+    shadowRadius: 10,
     elevation: 2,
   },
   gold: {
-    shadowColor: '#8A7340',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.28,
-    shadowRadius: 18,
+    shadowColor: '#8A5A3A',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.22,
+    shadowRadius: 22,
     elevation: 5,
   },
   ink: {
-    shadowColor: '#07110E',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.35,
-    shadowRadius: 24,
-    elevation: 8,
+    shadowColor: '#061014',
+    shadowOffset: { width: 0, height: 14 },
+    shadowOpacity: 0.32,
+    shadowRadius: 28,
+    elevation: 7,
   },
 };
 
+/** Tidal — slow like breath, fire, water */
 export const motion = {
-  enter: 700,
-  slow: 900,
-  pulse: 1400,
-  press: 160,
-  spring: { damping: 18, stiffness: 220, mass: 0.85 },
+  enter: 1100,
+  slow: 1600,
+  pulse: 3200,
+  breath: 4200,
+  press: 280,
+  spring: { damping: 26, stiffness: 90, mass: 1.1 },
 };

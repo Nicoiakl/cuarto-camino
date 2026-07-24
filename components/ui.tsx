@@ -18,7 +18,6 @@ import Animated, {
   useSharedValue,
   withRepeat,
   withSequence,
-  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -34,8 +33,41 @@ import {
   type,
 } from '@/constants/theme';
 
-const easeOut = Easing.out(Easing.cubic);
+/** Water / breath curve — no bounce */
+const tidal = Easing.inOut(Easing.sin);
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+function MistOrb({
+  style,
+  duration = 9000,
+  drift = 12,
+}: {
+  style: ViewStyle;
+  duration?: number;
+  drift?: number;
+}) {
+  const t = useSharedValue(0);
+  useEffect(() => {
+    t.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration, easing: tidal }),
+        withTiming(0, { duration, easing: tidal }),
+      ),
+      -1,
+      false,
+    );
+  }, [drift, duration, t]);
+
+  const anim = useAnimatedStyle(() => ({
+    transform: [
+      { translateY: interpolate(t.value, [0, 1], [0, -drift]) },
+      { scale: interpolate(t.value, [0, 1], [1, 1.06]) },
+    ],
+    opacity: interpolate(t.value, [0, 1], [0.45, 0.7]),
+  }));
+
+  return <Animated.View style={[style, anim]} />;
+}
 
 function Atmosphere({ mode }: { mode: 'day' | 'session' }) {
   if (mode === 'session') {
@@ -43,16 +75,18 @@ function Atmosphere({ mode }: { mode: 'day' | 'session' }) {
       <>
         <LinearGradient
           colors={[...gradients.session]}
-          locations={[0, 0.52, 1]}
+          locations={[0, 0.55, 1]}
           style={StyleSheet.absoluteFill}
         />
         <LinearGradient
           colors={[...gradients.sessionSheen]}
-          start={{ x: 0.1, y: 0 }}
-          end={{ x: 0.85, y: 0.65 }}
+          start={{ x: 0.2, y: 0 }}
+          end={{ x: 0.8, y: 0.75 }}
           style={StyleSheet.absoluteFill}
         />
-        <View style={styles.sessionVignette} />
+        {/* soft ember — like fire across water */}
+        <MistOrb style={styles.emberGlow} duration={motion.breath * 2} drift={8} />
+        <View style={styles.waterFloor} />
       </>
     );
   }
@@ -61,18 +95,18 @@ function Atmosphere({ mode }: { mode: 'day' | 'session' }) {
     <>
       <LinearGradient
         colors={[...gradients.screen]}
-        locations={[0, 0.48, 1]}
+        locations={[0, 0.5, 1]}
         style={StyleSheet.absoluteFill}
       />
       <LinearGradient
         colors={[...gradients.screenWarmEdge]}
         start={{ x: 1, y: 0 }}
-        end={{ x: 0.15, y: 0.6 }}
+        end={{ x: 0.2, y: 0.7 }}
         style={StyleSheet.absoluteFill}
       />
-      <View style={styles.grainA} />
-      <View style={styles.grainB} />
-      <View style={styles.grainC} />
+      <MistOrb style={styles.mistA} duration={10000} drift={14} />
+      <MistOrb style={styles.mistB} duration={14000} drift={10} />
+      <View style={styles.mistC} />
     </>
   );
 }
@@ -120,7 +154,6 @@ export function BrandMark({
       </Text>
       <View style={styles.brandRuleRow}>
         <View style={[styles.brandRule, light && { backgroundColor: colors.accentHot }]} />
-        <View style={[styles.brandRuleTail, light && { backgroundColor: 'rgba(233,216,168,0.35)' }]} />
       </View>
       {subtitle ? (
         <Text style={[styles.brandSub, light && { color: colors.whiteMuted }]}>
@@ -188,7 +221,7 @@ export function Hairline({ light }: { light?: boolean }) {
     <View
       style={[
         styles.hairline,
-        light && { backgroundColor: 'rgba(248,249,246,0.14)' },
+        light && { backgroundColor: 'rgba(243,247,246,0.12)' },
       ]}
     />
   );
@@ -205,9 +238,7 @@ export function Section({
 }) {
   return (
     <Animated.View
-      entering={FadeInDown.delay(delay)
-        .duration(motion.enter)
-        .easing(easeOut)}
+      entering={FadeInDown.delay(delay).duration(motion.enter).easing(tidal)}
       style={styles.section}>
       {title ? (
         <View style={styles.sectionHead}>
@@ -222,9 +253,9 @@ export function Section({
 
 async function tap() {
   try {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await Haptics.selectionAsync();
   } catch {
-    /* web / simulator */
+    /* web */
   }
 }
 
@@ -250,8 +281,8 @@ export function Button({
           : null;
 
   const animStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: interpolate(press.value, [0, 1], [1, 0.975]) }],
-    opacity: interpolate(press.value, [0, 1], [1, 0.94]),
+    transform: [{ scale: interpolate(press.value, [0, 1], [1, 0.982]) }],
+    opacity: interpolate(press.value, [0, 1], [1, 0.92]),
   }));
 
   const labelColor =
@@ -274,10 +305,10 @@ export function Button({
     <AnimatedPressable
       disabled={disabled}
       onPressIn={() => {
-        press.value = withTiming(1, { duration: motion.press });
+        press.value = withTiming(1, { duration: motion.press, easing: tidal });
       }}
       onPressOut={() => {
-        press.value = withSpring(0, motion.spring);
+        press.value = withTiming(0, { duration: 420, easing: tidal });
       }}
       onPress={async () => {
         await tap();
@@ -288,7 +319,7 @@ export function Button({
         styles.btnShell,
         shadowStyle,
         variant === 'ghost' && styles.btnGhostShell,
-        disabled && { opacity: 0.38, shadowOpacity: 0, elevation: 0 },
+        disabled && { opacity: 0.36, shadowOpacity: 0, elevation: 0 },
       ]}>
       <View style={styles.btnClip}>
         {gradient ? (
@@ -334,16 +365,16 @@ export function Chip({
   const session = tone === 'session';
   const press = useSharedValue(0);
   const animStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: interpolate(press.value, [0, 1], [1, 0.97]) }],
+    transform: [{ scale: interpolate(press.value, [0, 1], [1, 0.98]) }],
   }));
 
   return (
     <AnimatedPressable
       onPressIn={() => {
-        press.value = withTiming(1, { duration: 120 });
+        press.value = withTiming(1, { duration: 200, easing: tidal });
       }}
       onPressOut={() => {
-        press.value = withSpring(0, motion.spring);
+        press.value = withTiming(0, { duration: 360, easing: tidal });
       }}
       onPress={async () => {
         await tap();
@@ -369,37 +400,33 @@ export function Chip({
   );
 }
 
+/** Soft fire / water ripple — never urgent */
 export function PresencePulse({ active }: { active: boolean }) {
   const scale = useSharedValue(1);
-  const opacity = useSharedValue(0.18);
+  const opacity = useSharedValue(0.14);
 
   useEffect(() => {
-    if (!active) {
-      opacity.value = withRepeat(
-        withSequence(
-          withTiming(0.26, { duration: 1800, easing: easeOut }),
-          withTiming(0.12, { duration: 1800, easing: easeOut }),
-        ),
-        -1,
-        true,
-      );
-      scale.value = withRepeat(
-        withSequence(
-          withTiming(1.04, { duration: 1800, easing: easeOut }),
-          withTiming(0.96, { duration: 1800, easing: easeOut }),
-        ),
-        -1,
-        true,
-      );
-      return;
-    }
-    scale.value = withSequence(
-      withTiming(1.14, { duration: 780, easing: easeOut }),
-      withTiming(1, { duration: 980, easing: easeOut }),
+    opacity.value = withRepeat(
+      withSequence(
+        withTiming(active ? 0.36 : 0.22, {
+          duration: motion.pulse,
+          easing: tidal,
+        }),
+        withTiming(0.1, { duration: motion.pulse, easing: tidal }),
+      ),
+      -1,
+      true,
     );
-    opacity.value = withSequence(
-      withTiming(0.48, { duration: 780, easing: easeOut }),
-      withTiming(0.16, { duration: 980, easing: easeOut }),
+    scale.value = withRepeat(
+      withSequence(
+        withTiming(active ? 1.1 : 1.05, {
+          duration: motion.pulse,
+          easing: tidal,
+        }),
+        withTiming(0.94, { duration: motion.pulse, easing: tidal }),
+      ),
+      -1,
+      true,
     );
   }, [active, opacity, scale]);
 
@@ -420,43 +447,53 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg,
   },
-  grainA: {
+  mistA: {
     position: 'absolute',
-    top: -50,
-    right: -40,
-    width: 240,
-    height: 240,
-    borderRadius: 120,
-    backgroundColor: 'rgba(194, 166, 104, 0.08)',
+    top: -30,
+    right: -50,
+    width: 260,
+    height: 260,
+    borderRadius: 130,
+    backgroundColor: 'rgba(122, 154, 160, 0.16)',
   },
-  grainB: {
+  mistB: {
     position: 'absolute',
-    bottom: 100,
-    left: -70,
-    width: 280,
-    height: 280,
-    borderRadius: 140,
-    backgroundColor: 'rgba(20, 53, 47, 0.045)',
+    bottom: 80,
+    left: -80,
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: 'rgba(226, 184, 154, 0.1)',
   },
-  grainC: {
+  mistC: {
     position: 'absolute',
-    top: '42%',
-    right: '18%',
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: 'rgba(248, 249, 246, 0.35)',
+    top: '40%',
+    left: '30%',
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: 'rgba(242, 246, 245, 0.4)',
   },
-  sessionVignette: {
-    ...StyleSheet.absoluteFillObject,
-    borderWidth: 0,
-    backgroundColor: 'transparent',
-    shadowColor: '#000',
-    shadowOpacity: 0.45,
-    shadowRadius: 40,
+  emberGlow: {
+    position: 'absolute',
+    bottom: '18%',
+    alignSelf: 'center',
+    left: '22%',
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    backgroundColor: 'rgba(226, 184, 154, 0.14)',
+  },
+  waterFloor: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 160,
+    backgroundColor: 'rgba(7, 18, 22, 0.25)',
   },
   brandWrap: {
-    gap: 12,
+    gap: 14,
     marginBottom: spacing.xs,
   },
   brand: {
@@ -474,24 +511,17 @@ const styles = StyleSheet.create({
   brandRuleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
   },
   brandRule: {
-    width: 28,
-    height: 1.5,
+    width: 24,
+    height: 1,
     backgroundColor: colors.accent,
-    borderRadius: 1,
-  },
-  brandRuleTail: {
-    width: 10,
-    height: 1.5,
-    backgroundColor: 'rgba(194,166,104,0.35)',
     borderRadius: 1,
   },
   brandSub: {
     fontFamily: fonts.bodyItalic,
-    fontSize: 15.5,
-    lineHeight: 24,
+    fontSize: 16,
+    lineHeight: 26,
     color: colors.muted,
     maxWidth: 300,
   },
@@ -531,7 +561,7 @@ const styles = StyleSheet.create({
   },
   sectionHead: {
     marginBottom: spacing.xxs,
-    gap: 8,
+    gap: 10,
   },
   sectionTitle: {
     fontFamily: fonts.uiMedium,
@@ -542,9 +572,9 @@ const styles = StyleSheet.create({
     color: colors.focusSoft,
   },
   sectionRule: {
-    width: 22,
+    width: 18,
     height: 1,
-    backgroundColor: colors.accent,
+    backgroundColor: colors.water,
     opacity: 0.7,
   },
   btnShell: {
@@ -557,7 +587,7 @@ const styles = StyleSheet.create({
   btnGhostShell: {
     borderWidth: StyleSheet.hairlineWidth * 2,
     borderColor: colors.line,
-    backgroundColor: 'rgba(251,252,250,0.55)',
+    backgroundColor: 'rgba(247,250,249,0.5)',
   },
   btnFill: {
     minHeight: 54,
@@ -575,12 +605,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 1,
-    backgroundColor: 'rgba(255,255,255,0.35)',
+    backgroundColor: 'rgba(255,255,255,0.28)',
   },
   btnLabel: {
-    fontFamily: fonts.uiSemi,
+    fontFamily: fonts.uiMedium,
     fontSize: 15.5,
-    letterSpacing: 0.45,
+    letterSpacing: 0.55,
   },
   field: {
     backgroundColor: colors.surfaceRaised,
@@ -603,8 +633,8 @@ const styles = StyleSheet.create({
     borderRadius: radii.sm,
   },
   chipSession: {
-    borderColor: 'rgba(248,249,246,0.16)',
-    backgroundColor: 'rgba(248,249,246,0.045)',
+    borderColor: 'rgba(243,247,246,0.14)',
+    backgroundColor: 'rgba(243,247,246,0.04)',
   },
   chipSelected: {
     backgroundColor: colors.focus,
@@ -617,7 +647,7 @@ const styles = StyleSheet.create({
   chipLabel: {
     fontFamily: fonts.uiMedium,
     fontSize: 13.5,
-    letterSpacing: 0.2,
+    letterSpacing: 0.25,
     color: colors.inkSoft,
   },
   chipLabelSelected: {
@@ -625,15 +655,15 @@ const styles = StyleSheet.create({
   },
   pulse: {
     position: 'absolute',
-    width: 240,
-    height: 240,
-    borderRadius: 120,
+    width: 260,
+    height: 260,
+    borderRadius: 130,
     backgroundColor: colors.accentHot,
   },
   empty: {
     fontFamily: fonts.bodyItalic,
     fontSize: 15.5,
     color: colors.muted,
-    lineHeight: 24,
+    lineHeight: 25,
   },
 });
