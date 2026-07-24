@@ -137,7 +137,6 @@ export default function PracticaScreen() {
 
   useEffect(() => {
     setStatusBarStyle('light');
-    return () => setStatusBarStyle('dark');
   }, []);
 
   const current = practice.steps[step];

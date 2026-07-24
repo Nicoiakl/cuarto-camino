@@ -66,7 +66,7 @@ export default function RootLayout() {
     <I18nextProvider i18n={i18n}>
       <WorkProvider>
         <PremiumProvider>
-          <StatusBar style="dark" />
+          <StatusBar style="light" />
           <RootStack />
         </PremiumProvider>
       </WorkProvider>
@@ -82,7 +82,7 @@ function RootStack() {
       key={i18nInstance.language}
       screenOptions={{
         headerStyle: { backgroundColor: colors.bg },
-        headerTintColor: colors.focus,
+        headerTintColor: colors.accentHot,
         headerTitleStyle: {
           fontFamily: fonts.uiMedium,
           fontSize: 16,
@@ -90,7 +90,7 @@ function RootStack() {
         },
         headerShadowVisible: false,
         contentStyle: { backgroundColor: colors.bg },
-        animation: 'fade_from_bottom',
+        animation: 'fade',
       }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="revision" options={{ title: t('screens.revision') }} />

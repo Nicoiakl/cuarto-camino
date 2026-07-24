@@ -17,7 +17,7 @@ const en = {
     notFound: 'Not found',
   },
   brand: {
-    subtitle: 'A quiet place to return to yourself',
+    subtitle: 'Like watching a fire — a quiet place',
   },
   home: {
     remember: 'Remember',

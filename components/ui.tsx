@@ -70,43 +70,26 @@ function MistOrb({
 }
 
 function Atmosphere({ mode }: { mode: 'day' | 'session' }) {
-  if (mode === 'session') {
-    return (
-      <>
-        <LinearGradient
-          colors={[...gradients.session]}
-          locations={[0, 0.55, 1]}
-          style={StyleSheet.absoluteFill}
-        />
-        <LinearGradient
-          colors={[...gradients.sessionSheen]}
-          start={{ x: 0.2, y: 0 }}
-          end={{ x: 0.8, y: 0.75 }}
-          style={StyleSheet.absoluteFill}
-        />
-        {/* soft ember — like fire across water */}
-        <MistOrb style={styles.emberGlow} duration={motion.breath * 2} drift={8} />
-        <View style={styles.waterFloor} />
-      </>
-    );
-  }
-
+  const session = mode === 'session';
   return (
     <>
       <LinearGradient
-        colors={[...gradients.screen]}
-        locations={[0, 0.5, 1]}
+        colors={[...(session ? gradients.session : gradients.screen)]}
+        locations={[0, 0.55, 1]}
         style={StyleSheet.absoluteFill}
       />
       <LinearGradient
-        colors={[...gradients.screenWarmEdge]}
-        start={{ x: 1, y: 0 }}
-        end={{ x: 0.2, y: 0.7 }}
+        colors={[...(session ? gradients.sessionSheen : gradients.screenWarmEdge)]}
+        start={{ x: 0.5, y: 1 }}
+        end={{ x: 0.5, y: 0.2 }}
         style={StyleSheet.absoluteFill}
       />
-      <MistOrb style={styles.mistA} duration={10000} drift={14} />
-      <MistOrb style={styles.mistB} duration={14000} drift={10} />
-      <View style={styles.mistC} />
+      {/* One flame only — the whole night gathers around it */}
+      <MistOrb
+        style={session ? styles.flameCore : styles.flameSoft}
+        duration={motion.breath}
+        drift={6}
+      />
     </>
   );
 }
@@ -153,7 +136,7 @@ export function BrandMark({
         The Work
       </Text>
       <View style={styles.brandRuleRow}>
-        <View style={[styles.brandRule, light && { backgroundColor: colors.accentHot }]} />
+        <View style={styles.brandRule} />
       </View>
       {subtitle ? (
         <Text style={[styles.brandSub, light && { color: colors.whiteMuted }]}>
@@ -282,21 +265,19 @@ export function Button({
     opacity: interpolate(press.value, [0, 1], [1, 0.92]),
   }));
 
+  /** Flame buttons need dark text; ghost stays warm on night */
   const labelColor =
-    variant === 'ghost'
-      ? colors.focus
-      : variant === 'primary'
-        ? colors.white
-        : colors.ink;
+    variant === 'ghost' ? colors.accentHot : colors.bgDeep;
 
   const shadowStyle =
-    variant === 'lumen' || variant === 'session'
-      ? shadows.gold
-      : variant === 'primary'
-        ? shadows.ink
-        : variant === 'gold'
-          ? shadows.soft
-          : shadows.none;
+    variant === 'ghost'
+      ? shadows.none
+      : variant === 'lumen' ||
+          variant === 'session' ||
+          variant === 'primary' ||
+          variant === 'gold'
+        ? shadows.gold
+        : shadows.none;
 
   return (
     <AnimatedPressable
@@ -390,8 +371,7 @@ export function Chip({
         style={[
           styles.chipLabel,
           session && { color: colors.whiteMuted },
-          selected && styles.chipLabelSelected,
-          selected && session && { color: colors.ink },
+          selected && { color: colors.bgDeep },
         ]}>
         {label}
       </Text>
@@ -399,30 +379,30 @@ export function Chip({
   );
 }
 
-/** Soft fire / water ripple — never urgent */
+/** Single flame flicker — never urgent */
 export function PresencePulse({ active }: { active: boolean }) {
   const scale = useSharedValue(1);
-  const opacity = useSharedValue(0.14);
+  const opacity = useSharedValue(0.16);
 
   useEffect(() => {
     opacity.value = withRepeat(
       withSequence(
-        withTiming(active ? 0.36 : 0.22, {
+        withTiming(active ? 0.42 : 0.26, {
           duration: motion.pulse,
           easing: tidal,
         }),
-        withTiming(0.1, { duration: motion.pulse, easing: tidal }),
+        withTiming(0.08, { duration: motion.pulse * 0.85, easing: tidal }),
       ),
       -1,
       true,
     );
     scale.value = withRepeat(
       withSequence(
-        withTiming(active ? 1.1 : 1.05, {
+        withTiming(active ? 1.12 : 1.06, {
           duration: motion.pulse,
           easing: tidal,
         }),
-        withTiming(0.94, { duration: motion.pulse, easing: tidal }),
+        withTiming(0.92, { duration: motion.pulse * 0.85, easing: tidal }),
       ),
       -1,
       true,
@@ -446,50 +426,25 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg,
   },
-  mistA: {
+  flameSoft: {
     position: 'absolute',
-    top: -30,
-    right: -50,
-    width: 260,
-    height: 260,
-    borderRadius: 130,
-    backgroundColor: 'rgba(122, 154, 160, 0.16)',
-  },
-  mistB: {
-    position: 'absolute',
-    bottom: 80,
-    left: -80,
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    backgroundColor: 'rgba(226, 184, 154, 0.1)',
-  },
-  mistC: {
-    position: 'absolute',
-    top: '40%',
-    left: '30%',
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    backgroundColor: 'rgba(242, 246, 245, 0.4)',
-  },
-  emberGlow: {
-    position: 'absolute',
-    bottom: '18%',
+    bottom: '12%',
     alignSelf: 'center',
-    left: '22%',
+    left: '28%',
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    backgroundColor: 'rgba(240, 184, 120, 0.14)',
+  },
+  flameCore: {
+    position: 'absolute',
+    bottom: '16%',
+    alignSelf: 'center',
+    left: '24%',
     width: 220,
     height: 220,
     borderRadius: 110,
-    backgroundColor: 'rgba(226, 184, 154, 0.14)',
-  },
-  waterFloor: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: 160,
-    backgroundColor: 'rgba(7, 18, 22, 0.25)',
+    backgroundColor: 'rgba(240, 184, 120, 0.2)',
   },
   brandWrap: {
     gap: 14,
@@ -512,9 +467,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   brandRule: {
-    width: 24,
-    height: 1,
-    backgroundColor: colors.accent,
+    width: 20,
+    height: 1.5,
+    backgroundColor: colors.accentHot,
     borderRadius: 1,
   },
   brandSub: {
@@ -571,10 +526,10 @@ const styles = StyleSheet.create({
     color: colors.focusSoft,
   },
   sectionRule: {
-    width: 18,
+    width: 16,
     height: 1,
-    backgroundColor: colors.water,
-    opacity: 0.7,
+    backgroundColor: colors.accent,
+    opacity: 0.55,
   },
   btnShell: {
     borderRadius: radii.md,
@@ -586,7 +541,7 @@ const styles = StyleSheet.create({
   btnGhostShell: {
     borderWidth: StyleSheet.hairlineWidth * 2,
     borderColor: colors.line,
-    backgroundColor: 'rgba(247,250,249,0.5)',
+    backgroundColor: 'rgba(237, 230, 220, 0.03)',
   },
   btnFill: {
     minHeight: 54,
@@ -636,8 +591,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(243,247,246,0.04)',
   },
   chipSelected: {
-    backgroundColor: colors.focus,
-    borderColor: colors.focus,
+    backgroundColor: colors.accentHot,
+    borderColor: colors.accentHot,
   },
   chipSessionSelected: {
     backgroundColor: colors.accentHot,
@@ -649,14 +604,11 @@ const styles = StyleSheet.create({
     letterSpacing: 0.25,
     color: colors.inkSoft,
   },
-  chipLabelSelected: {
-    color: colors.white,
-  },
   pulse: {
     position: 'absolute',
-    width: 260,
-    height: 260,
-    borderRadius: 130,
+    width: 240,
+    height: 240,
+    borderRadius: 120,
     backgroundColor: colors.accentHot,
   },
   empty: {

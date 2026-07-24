@@ -19,7 +19,7 @@ const es: TranslationSchema = {
     notFound: 'No encontrado',
   },
   brand: {
-    subtitle: 'Un lugar quieto para volver a ti',
+    subtitle: 'Como mirar el fuego — un lugar quieto',
   },
   home: {
     remember: 'Recuérdate',

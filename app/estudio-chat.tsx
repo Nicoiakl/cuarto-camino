@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
     color: colors.ink,
   },
   userBubbleText: {
-    color: colors.white,
+    color: colors.bgDeep,
   },
   sources: {
     gap: 6,

@@ -75,7 +75,6 @@ export default function HoyScreen() {
 
   useEffect(() => {
     setStatusBarStyle('light');
-    return () => setStatusBarStyle('dark');
   }, []);
 
   const heroMin = Math.max(560, SCREEN_H * 0.84);
@@ -102,8 +101,6 @@ export default function HoyScreen() {
             end={{ x: 0.7, y: 1 }}
             style={StyleSheet.absoluteFill}
           />
-          {/* lagoon reflection band */}
-          <View style={styles.lagoonBand} />
           <View style={styles.heroOrbWrap} pointerEvents="none">
             <PresencePulse active={false} />
           </View>
@@ -225,24 +222,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     overflow: 'hidden',
   },
-  lagoonBand: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: '38%',
-    backgroundColor: 'rgba(20, 48, 56, 0.35)',
-  },
   heroOrbWrap: {
     position: 'absolute',
     alignSelf: 'center',
-    left: '18%',
-    bottom: '22%',
-    width: 260,
-    height: 260,
+    left: '20%',
+    bottom: '18%',
+    width: 240,
+    height: 240,
     alignItems: 'center',
     justifyContent: 'center',
-    opacity: 0.75,
+    opacity: 0.85,
   },
   heroInner: {
     flex: 1,
@@ -309,7 +298,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.uiMedium,
     fontSize: 16,
     letterSpacing: 0.6,
-    color: colors.ink,
+    color: colors.bgDeep,
   },
   below: {
     paddingHorizontal: spacing.lg,
