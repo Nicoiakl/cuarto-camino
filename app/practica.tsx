@@ -153,12 +153,8 @@ export default function PracticaScreen() {
     setPhase('guide');
   };
 
-  const nextStep = async () => {
-    try {
-      await Haptics.selectionAsync();
-    } catch {
-      /* web */
-    }
+  const nextStep = () => {
+    void Haptics.selectionAsync().catch(() => {});
     if (step < practice.steps.length - 1) {
       setStep((s) => s + 1);
       return;

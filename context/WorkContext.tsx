@@ -130,24 +130,31 @@ export function WorkProvider({ children }: { children: React.ReactNode }) {
     }));
   }, []);
 
-  const setAimForToday = useCallback(
-    (text: string) => {
-      const date = todayKey();
-      setState((prev) => {
-        const others = prev.aims.filter((a) => a.date !== date);
-        const existing = prev.aims.find((a) => a.date === date);
-        const aim: Aim = {
-          id: existing?.id ?? createId(),
-          date,
-          text: text.trim(),
-          kept: existing?.kept ?? null,
-        };
-        return { ...prev, aims: [aim, ...others] };
-      });
-      track('aim_set');
-    },
-    [track],
-  );
+  const setAimForToday = useCallback((text: string) => {
+    const date = todayKey();
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    setState((prev) => {
+      const others = prev.aims.filter((a) => a.date !== date);
+      const existing = prev.aims.find((a) => a.date === date);
+      const aim: Aim = {
+        id: existing?.id ?? createId(),
+        date,
+        text: trimmed,
+        kept: existing?.kept ?? null,
+      };
+      const event: AnalyticsEvent = {
+        id: createId(),
+        name: 'aim_set',
+        at: new Date().toISOString(),
+      };
+      return {
+        ...prev,
+        aims: [aim, ...others],
+        analytics: [event, ...prev.analytics].slice(0, 2000),
+      };
+    });
+  }, []);
 
   const markAimKept = useCallback((kept: boolean) => {
     const date = todayKey();

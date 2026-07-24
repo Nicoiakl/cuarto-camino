@@ -251,12 +251,9 @@ export function Section({
   );
 }
 
-async function tap() {
-  try {
-    await Haptics.selectionAsync();
-  } catch {
-    /* web */
-  }
+function tap() {
+  // Never await — Haptics can hang in Expo Go and block the real action.
+  void Haptics.selectionAsync().catch(() => {});
 }
 
 export function Button({
@@ -305,13 +302,15 @@ export function Button({
     <AnimatedPressable
       disabled={disabled}
       onPressIn={() => {
+        if (disabled) return;
         press.value = withTiming(1, { duration: motion.press, easing: tidal });
       }}
       onPressOut={() => {
         press.value = withTiming(0, { duration: 420, easing: tidal });
       }}
-      onPress={async () => {
-        await tap();
+      onPress={() => {
+        if (disabled) return;
+        tap();
         onPress();
       }}
       style={[
@@ -321,7 +320,7 @@ export function Button({
         variant === 'ghost' && styles.btnGhostShell,
         disabled && { opacity: 0.36, shadowOpacity: 0, elevation: 0 },
       ]}>
-      <View style={styles.btnClip}>
+      <View style={styles.btnClip} pointerEvents="none">
         {gradient ? (
           <LinearGradient
             colors={[...gradient]}
@@ -376,8 +375,8 @@ export function Chip({
       onPressOut={() => {
         press.value = withTiming(0, { duration: 360, easing: tidal });
       }}
-      onPress={async () => {
-        await tap();
+      onPress={() => {
+        tap();
         onPress?.();
       }}
       style={[

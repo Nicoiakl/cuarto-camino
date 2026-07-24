@@ -147,12 +147,8 @@ export default function HoyScreen() {
                     easing: tidal,
                   });
                 }}
-                onPress={async () => {
-                  try {
-                    await Haptics.selectionAsync();
-                  } catch {
-                    /* web */
-                  }
+                onPress={() => {
+                  void Haptics.selectionAsync().catch(() => {});
                   track('home_start_practice', { kind: practice.kind });
                   router.push('/practica');
                 }}

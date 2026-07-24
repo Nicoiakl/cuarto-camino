@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Keyboard, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Body, Button, Field, Screen, Section } from '@/components/ui';
 import { colors, fonts, radii, spacing } from '@/constants/theme';
@@ -10,6 +10,7 @@ export default function AimsScreen() {
   const { t } = useTranslation();
   const { todayAim, setAimForToday, aims, track } = useWork();
   const [text, setText] = useState(todayAim?.text ?? '');
+  const [savedFlash, setSavedFlash] = useState(false);
 
   useEffect(() => {
     track('screen_aims');
@@ -19,14 +20,34 @@ export default function AimsScreen() {
     setText(todayAim?.text ?? '');
   }, [todayAim?.text]);
 
-  const history = aims.filter((a) => a.id !== todayAim?.id).slice(0, 14);
+  useEffect(() => {
+    if (!savedFlash) return;
+    const id = setTimeout(() => setSavedFlash(false), 2200);
+    return () => clearTimeout(id);
+  }, [savedFlash]);
+
+  const history = aims
+    .filter((a) => a.id !== todayAim?.id)
+    .slice(0, 14);
   const examples = [t('aims.ex1'), t('aims.ex2'), t('aims.ex3')];
+  const canSave = Boolean(text.trim());
+  const isUnchanged =
+    Boolean(todayAim?.text) && text.trim() === todayAim?.text.trim();
+
+  const save = () => {
+    const next = text.trim();
+    if (!next) return;
+    Keyboard.dismiss();
+    setAimForToday(next);
+    setSavedFlash(true);
+  };
 
   return (
     <Screen>
       <ScrollView
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}>
         <Section title={t('aims.title')}>
           <Body>{t('aims.intro')}</Body>
@@ -41,10 +62,22 @@ export default function AimsScreen() {
             style={{ minHeight: 96, textAlignVertical: 'top' }}
           />
           <Button
-            label={t('aims.save')}
-            onPress={() => setAimForToday(text)}
-            disabled={!text.trim()}
+            label={
+              savedFlash
+                ? t('aims.saved')
+                : isUnchanged
+                  ? t('aims.update')
+                  : t('aims.save')
+            }
+            onPress={save}
+            disabled={!canSave}
           />
+          {todayAim?.text ? (
+            <View style={styles.savedBox}>
+              <Text style={styles.savedLabel}>{t('aims.savedToday')}</Text>
+              <Text style={styles.savedText}>{todayAim.text}</Text>
+            </View>
+          ) : null}
           {todayAim?.kept != null ? (
             <Body muted>
               {t('aims.nightMarked')}{' '}
@@ -93,11 +126,31 @@ const styles = StyleSheet.create({
   examples: {
     gap: 8,
   },
+  savedBox: {
+    marginTop: spacing.xs,
+    paddingTop: spacing.sm,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.lineHair,
+    gap: 6,
+  },
+  savedLabel: {
+    fontFamily: fonts.uiMedium,
+    fontSize: 11,
+    letterSpacing: 1.6,
+    textTransform: 'uppercase',
+    color: colors.focusSoft,
+  },
+  savedText: {
+    fontFamily: fonts.displayItalic,
+    fontSize: 22,
+    lineHeight: 30,
+    color: colors.ink,
+  },
   card: {
     backgroundColor: colors.surface,
     borderRadius: radii.md,
-    borderWidth: 1,
-    borderColor: colors.line,
+    borderWidth: StyleSheet.hairlineWidth * 2,
+    borderColor: colors.lineSoft,
     padding: spacing.md,
     gap: 4,
   },
