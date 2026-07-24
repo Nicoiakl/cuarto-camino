@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import { SymbolView } from 'expo-symbols';
 import { Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { colors, fonts } from '@/constants/theme';
 import { useWork } from '@/context/WorkContext';
 
@@ -43,12 +43,8 @@ export default function TabLayout() {
         options={{
           title: t('tabs.today'),
           headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{ ios: 'sun.max', android: 'wb_sunny', web: 'wb_sunny' }}
-              tintColor={color}
-              size={24}
-            />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="sunny-outline" size={size} color={color} />
           ),
         }}
       />
@@ -56,12 +52,8 @@ export default function TabLayout() {
         name="stops"
         options={{
           title: t('tabs.stops'),
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{ ios: 'bell', android: 'notifications', web: 'notifications' }}
-              tintColor={color}
-              size={24}
-            />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="notifications-outline" size={size} color={color} />
           ),
         }}
       />
@@ -69,12 +61,8 @@ export default function TabLayout() {
         name="observar"
         options={{
           title: t('tabs.observe'),
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{ ios: 'eye', android: 'visibility', web: 'visibility' }}
-              tintColor={color}
-              size={24}
-            />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="eye-outline" size={size} color={color} />
           ),
         }}
       />
@@ -82,12 +70,8 @@ export default function TabLayout() {
         name="aims"
         options={{
           title: t('tabs.aim'),
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{ ios: 'target', android: 'my_location', web: 'my_location' }}
-              tintColor={color}
-              size={24}
-            />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="locate-outline" size={size} color={color} />
           ),
         }}
       />
@@ -95,16 +79,8 @@ export default function TabLayout() {
         name="mas"
         options={{
           title: t('tabs.more'),
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{
-                ios: 'ellipsis.circle',
-                android: 'more_horiz',
-                web: 'more_horiz',
-              }}
-              tintColor={color}
-              size={24}
-            />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="ellipsis-horizontal-circle-outline" size={size} color={color} />
           ),
         }}
       />
