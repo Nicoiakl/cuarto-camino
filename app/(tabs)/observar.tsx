@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Body, Button, Chip, Field, Screen, Section } from '@/components/ui';
 import { colors, fonts, radii, spacing } from '@/constants/theme';
 import { useWork } from '@/context/WorkContext';
@@ -33,6 +33,12 @@ export default function ObservarScreen() {
   };
 
   const confirmRemove = (id: string) => {
+    if (Platform.OS === 'web') {
+      if (typeof window !== 'undefined' && window.confirm('¿Borrar esta observación?')) {
+        removeObservation(id);
+      }
+      return;
+    }
     Alert.alert('Borrar observación', '¿Quieres eliminarla?', [
       { text: 'Cancelar', style: 'cancel' },
       { text: 'Borrar', style: 'destructive', onPress: () => removeObservation(id) },
