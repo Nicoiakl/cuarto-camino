@@ -19,7 +19,7 @@
     "android": {
       "package": "app.thework.practice",
       "adaptiveIcon": {
-        "backgroundColor": "#E6E9E4",
+        "backgroundColor": "#E8E4DC",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -38,7 +38,7 @@
         {
           "image": "./assets/images/splash-icon.png",
           "resizeMode": "contain",
-          "backgroundColor": "#E6E9E4"
+          "backgroundColor": "#E8E4DC"
         }
       ],
       "expo-font",

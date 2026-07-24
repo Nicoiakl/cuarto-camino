@@ -17,19 +17,27 @@ import Animated, {
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import { colors, fonts, radii, spacing } from '@/constants/theme';
+import { colors, fonts, gradients, radii, spacing } from '@/constants/theme';
 
 export function Screen({
   children,
   style,
+  mode = 'day',
 }: {
   children: React.ReactNode;
   style?: ViewStyle;
+  mode?: 'day' | 'session';
 }) {
+  const g = mode === 'session' ? gradients.session : gradients.screen;
   return (
-    <View style={[styles.screen, style]}>
+    <View
+      style={[
+        styles.screen,
+        mode === 'session' && { backgroundColor: colors.session },
+        style,
+      ]}>
       <LinearGradient
-        colors={['#EEF1EC', colors.bg, colors.bgDeep]}
+        colors={[...g]}
         locations={[0, 0.45, 1]}
         style={StyleSheet.absoluteFill}
       />
@@ -47,21 +55,41 @@ export function BrandMark({ subtitle }: { subtitle?: string }) {
   );
 }
 
-export function Headline({ children }: { children: React.ReactNode }) {
-  return <Text style={styles.headline}>{children}</Text>;
+export function Headline({
+  children,
+  light,
+}: {
+  children: React.ReactNode;
+  light?: boolean;
+}) {
+  return (
+    <Text style={[styles.headline, light && { color: colors.white }]}>
+      {children}
+    </Text>
+  );
 }
 
 export function Body({
   children,
   muted,
+  light,
   style,
 }: {
   children: React.ReactNode;
   muted?: boolean;
+  light?: boolean;
   style?: object;
 }) {
   return (
-    <Text style={[styles.body, muted && styles.muted, style]}>{children}</Text>
+    <Text
+      style={[
+        styles.body,
+        muted && styles.muted,
+        light && { color: 'rgba(247,245,240,0.78)' },
+        style,
+      ]}>
+      {children}
+    </Text>
   );
 }
 
@@ -90,7 +118,7 @@ export function Button({
 }: {
   label: string;
   onPress: () => void;
-  variant?: 'primary' | 'ghost' | 'gold';
+  variant?: 'primary' | 'ghost' | 'gold' | 'session';
   disabled?: boolean;
 }) {
   return (
@@ -109,14 +137,16 @@ export function Button({
         variant === 'primary' && styles.btnPrimary,
         variant === 'ghost' && styles.btnGhost,
         variant === 'gold' && styles.btnGold,
+        variant === 'session' && styles.btnSession,
         pressed && { opacity: 0.86, transform: [{ scale: 0.985 }] },
         disabled && { opacity: 0.45 },
       ]}>
       <Text
         style={[
           styles.btnLabel,
-          variant === 'ghost' && { color: colors.pine },
+          variant === 'ghost' && { color: colors.focus },
           variant === 'gold' && { color: colors.ink },
+          variant === 'session' && { color: colors.session },
         ]}>
         {label}
       </Text>
@@ -138,16 +168,29 @@ export function Chip({
   label,
   selected,
   onPress,
+  tone = 'day',
 }: {
   label: string;
   selected?: boolean;
   onPress?: () => void;
+  tone?: 'day' | 'session';
 }) {
+  const session = tone === 'session';
   return (
     <Pressable
       onPress={onPress}
-      style={[styles.chip, selected && styles.chipSelected]}>
-      <Text style={[styles.chipLabel, selected && styles.chipLabelSelected]}>
+      style={[
+        styles.chip,
+        session && styles.chipSession,
+        selected && (session ? styles.chipSessionSelected : styles.chipSelected),
+      ]}>
+      <Text
+        style={[
+          styles.chipLabel,
+          session && { color: 'rgba(247,245,240,0.8)' },
+          selected && styles.chipLabelSelected,
+          selected && session && { color: colors.session },
+        ]}>
         {label}
       </Text>
     </Pressable>
@@ -156,17 +199,17 @@ export function Chip({
 
 export function PresencePulse({ active }: { active: boolean }) {
   const scale = useSharedValue(1);
-  const opacity = useSharedValue(0.35);
+  const opacity = useSharedValue(0.28);
 
   useEffect(() => {
     if (!active) return;
     scale.value = withSequence(
-      withTiming(1.08, { duration: 700 }),
+      withTiming(1.1, { duration: 700 }),
       withTiming(1, { duration: 900 }),
     );
     opacity.value = withSequence(
-      withTiming(0.7, { duration: 700 }),
-      withTiming(0.25, { duration: 900 }),
+      withTiming(0.65, { duration: 700 }),
+      withTiming(0.22, { duration: 900 }),
     );
   }, [active, opacity, scale]);
 
@@ -189,14 +232,14 @@ const styles = StyleSheet.create({
   },
   brandWrap: {
     gap: 4,
-    marginBottom: spacing.md,
+    marginBottom: spacing.sm,
   },
   brand: {
     fontFamily: fonts.display,
-    fontSize: 42,
-    lineHeight: 46,
+    fontSize: 44,
+    lineHeight: 48,
     color: colors.ink,
-    letterSpacing: 0.5,
+    letterSpacing: 0.4,
   },
   brandSub: {
     fontFamily: fonts.bodyItalic,
@@ -205,8 +248,8 @@ const styles = StyleSheet.create({
   },
   headline: {
     fontFamily: fonts.display,
-    fontSize: 28,
-    lineHeight: 34,
+    fontSize: 30,
+    lineHeight: 36,
     color: colors.ink,
     marginBottom: spacing.sm,
   },
@@ -224,21 +267,21 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   sectionTitle: {
-    fontFamily: fonts.bodyMedium,
-    fontSize: 13,
-    letterSpacing: 1.2,
+    fontFamily: fonts.uiMedium,
+    fontSize: 12,
+    letterSpacing: 1.4,
     textTransform: 'uppercase',
-    color: colors.pine,
+    color: colors.focusSoft,
     marginBottom: 2,
   },
   btn: {
     borderRadius: radii.md,
-    paddingVertical: 14,
+    paddingVertical: 15,
     paddingHorizontal: 18,
     alignItems: 'center',
   },
   btnPrimary: {
-    backgroundColor: colors.pine,
+    backgroundColor: colors.focus,
   },
   btnGhost: {
     backgroundColor: 'transparent',
@@ -246,10 +289,13 @@ const styles = StyleSheet.create({
     borderColor: colors.line,
   },
   btnGold: {
-    backgroundColor: colors.goldSoft,
+    backgroundColor: colors.accentSoft,
+  },
+  btnSession: {
+    backgroundColor: colors.accentSoft,
   },
   btnLabel: {
-    fontFamily: fonts.bodyMedium,
+    fontFamily: fonts.uiMedium,
     fontSize: 16,
     color: colors.white,
   },
@@ -269,16 +315,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.line,
     backgroundColor: colors.surface,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: radii.sm,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: radii.pill,
+  },
+  chipSession: {
+    borderColor: 'rgba(247,245,240,0.22)',
+    backgroundColor: 'rgba(247,245,240,0.06)',
   },
   chipSelected: {
-    backgroundColor: colors.pine,
-    borderColor: colors.pine,
+    backgroundColor: colors.focus,
+    borderColor: colors.focus,
+  },
+  chipSessionSelected: {
+    backgroundColor: colors.accentSoft,
+    borderColor: colors.accentSoft,
   },
   chipLabel: {
-    fontFamily: fonts.body,
+    fontFamily: fonts.ui,
     fontSize: 14,
     color: colors.inkSoft,
   },
@@ -287,10 +341,10 @@ const styles = StyleSheet.create({
   },
   pulse: {
     position: 'absolute',
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: colors.gold,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: colors.accent,
   },
   empty: {
     fontFamily: fonts.bodyItalic,

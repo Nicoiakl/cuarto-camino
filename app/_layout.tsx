@@ -3,6 +3,11 @@ import {
   CormorantGaramond_600SemiBold,
 } from '@expo-google-fonts/cormorant-garamond';
 import {
+  DMSans_400Regular,
+  DMSans_500Medium,
+  DMSans_700Bold,
+} from '@expo-google-fonts/dm-sans';
+import {
   Literata_400Regular,
   Literata_400Regular_Italic,
   Literata_500Medium,
@@ -17,7 +22,7 @@ import 'react-native-reanimated';
 
 import i18n, { loadSavedLanguage } from '@/i18n';
 import { WorkProvider } from '@/context/WorkContext';
-import { colors } from '@/constants/theme';
+import { colors, fonts } from '@/constants/theme';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -34,6 +39,9 @@ export default function RootLayout() {
     Literata_400Regular,
     Literata_400Regular_Italic,
     Literata_500Medium,
+    DMSans_400Regular,
+    DMSans_500Medium,
+    DMSans_700Bold,
   });
   const [i18nReady, setI18nReady] = useState(false);
 
@@ -69,9 +77,9 @@ function RootStack() {
       key={i18nInstance.language}
       screenOptions={{
         headerStyle: { backgroundColor: colors.bg },
-        headerTintColor: colors.pine,
+        headerTintColor: colors.focus,
         headerTitleStyle: {
-          fontFamily: 'Literata_500Medium',
+          fontFamily: fonts.uiMedium,
           color: colors.ink,
         },
         contentStyle: { backgroundColor: colors.bg },
@@ -85,6 +93,10 @@ function RootStack() {
       <Stack.Screen
         name="estudio-settings"
         options={{ title: t('screens.studySettings') }}
+      />
+      <Stack.Screen
+        name="practica"
+        options={{ headerShown: false, presentation: 'fullScreenModal' }}
       />
     </Stack>
   );

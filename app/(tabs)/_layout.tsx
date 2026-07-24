@@ -17,7 +17,7 @@ export default function TabLayout() {
     <Tabs
       key={i18n.language}
       screenOptions={{
-        tabBarActiveTintColor: colors.pine,
+        tabBarActiveTintColor: colors.focus,
         tabBarInactiveTintColor: colors.muted,
         tabBarStyle: {
           backgroundColor: colors.surface,
@@ -27,13 +27,13 @@ export default function TabLayout() {
           paddingBottom: 8,
         },
         tabBarLabelStyle: {
-          fontFamily: fonts.body,
+          fontFamily: fonts.ui,
           fontSize: 11,
         },
         headerStyle: { backgroundColor: colors.bg },
         headerTintColor: colors.ink,
         headerTitleStyle: {
-          fontFamily: fonts.bodyMedium,
+          fontFamily: fonts.uiMedium,
           fontSize: 17,
         },
         headerShadowVisible: false,
