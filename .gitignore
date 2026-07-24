@@ -35,7 +35,7 @@ yarn-error.*
 
 # Copyrighted source texts & generated RAG corpus (personal study only)
 /private/
-/assets/corpus/
+/assets/corpus/chunks.json
 
 # typescript
 *.tsbuildinfo
