@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Keyboard, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Keyboard, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Body, Button, Field, Screen, Section } from '@/components/ui';
+import { AppShell, Body, Button, Field, Section } from '@/components/ui';
 import { colors, fonts, radii, spacing } from '@/constants/theme';
 import { useWork } from '@/context/WorkContext';
 import { formatDayLabel } from '@/lib/dates';
@@ -43,86 +43,76 @@ export default function AimsScreen() {
   };
 
   return (
-    <Screen>
-      <ScrollView
-        contentContainerStyle={styles.content}
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="on-drag"
-        showsVerticalScrollIndicator={false}>
-        <Section title={t('aims.title')}>
-          <Body>{t('aims.intro')}</Body>
-        </Section>
+    <AppShell>
+      <Section title={t('aims.title')}>
+        <Body>{t('aims.intro')}</Body>
+      </Section>
 
-        <Section title={t('aims.today')}>
-          <Field
-            value={text}
-            onChangeText={setText}
-            placeholder={t('aims.placeholder')}
-            multiline
-            style={{ minHeight: 96, textAlignVertical: 'top' }}
-          />
-          <Button
-            label={
-              savedFlash
-                ? t('aims.saved')
-                : isUnchanged
-                  ? t('aims.update')
-                  : t('aims.save')
-            }
-            onPress={save}
-            disabled={!canSave}
-          />
-          {todayAim?.text ? (
-            <View style={styles.savedBox}>
-              <Text style={styles.savedLabel}>{t('aims.savedToday')}</Text>
-              <Text style={styles.savedText}>{todayAim.text}</Text>
-            </View>
-          ) : null}
-          {todayAim?.kept != null ? (
-            <Body muted>
-              {t('aims.nightMarked')}{' '}
-              {todayAim.kept ? t('aims.keptPartly') : t('aims.slippedAway')}
-            </Body>
-          ) : null}
-        </Section>
-
-        <Section title={t('aims.examples')}>
-          <View style={styles.examples}>
-            {examples.map((ex) => (
-              <Button key={ex} label={ex} variant="ghost" onPress={() => setText(ex)} />
-            ))}
+      <Section title={t('aims.today')}>
+        <Field
+          value={text}
+          onChangeText={setText}
+          placeholder={t('aims.placeholder')}
+          multiline
+          style={{ minHeight: 96, textAlignVertical: 'top' }}
+        />
+        <Button
+          label={
+            savedFlash
+              ? t('aims.saved')
+              : isUnchanged
+                ? t('aims.update')
+                : t('aims.save')
+          }
+          onPress={save}
+          disabled={!canSave}
+        />
+        {todayAim?.text ? (
+          <View style={styles.savedBox}>
+            <Text style={styles.savedLabel}>{t('aims.savedToday')}</Text>
+            <Text style={styles.savedText}>{todayAim.text}</Text>
           </View>
-        </Section>
+        ) : null}
+        {todayAim?.kept != null ? (
+          <Body muted>
+            {t('aims.nightMarked')}{' '}
+            {todayAim.kept ? t('aims.keptPartly') : t('aims.slippedAway')}
+          </Body>
+        ) : null}
+      </Section>
 
-        <Section title={t('aims.history')}>
-          {history.length === 0 ? (
-            <Body muted>{t('aims.historyEmpty')}</Body>
-          ) : (
-            history.map((a) => (
-              <View key={a.id} style={styles.card}>
-                <Text style={styles.meta}>{formatDayLabel(a.date)}</Text>
-                <Text style={styles.aim}>{a.text}</Text>
-                <Text style={styles.kept}>
-                  {a.kept == null
-                    ? t('aims.noReview')
-                    : a.kept
-                      ? t('aims.aimKept')
-                      : t('aims.aimLost')}
-                </Text>
-              </View>
-            ))
-          )}
-        </Section>
-      </ScrollView>
-    </Screen>
+      <Section title={t('aims.examples')}>
+        <View style={styles.examples}>
+          {examples.map((ex) => (
+            <Button key={ex} label={ex} variant="ghost" onPress={() => setText(ex)} />
+          ))}
+        </View>
+      </Section>
+
+      <Section title={t('aims.history')}>
+        {history.length === 0 ? (
+          <Body muted>{t('aims.historyEmpty')}</Body>
+        ) : (
+          history.map((a) => (
+            <View key={a.id} style={styles.card}>
+              <Text style={styles.meta}>{formatDayLabel(a.date)}</Text>
+              <Text style={styles.aim}>{a.text}</Text>
+              <Text style={styles.kept}>
+                {a.kept == null
+                  ? t('aims.noReview')
+                  : a.kept
+                    ? t('aims.aimKept')
+                    : t('aims.aimLost')}
+              </Text>
+            </View>
+          ))
+        )}
+      </Section>
+    </AppShell>
   );
 }
 
 const styles = StyleSheet.create({
-  content: {
-    padding: spacing.lg,
-    paddingBottom: 48,
-  },
   examples: {
     gap: 8,
   },

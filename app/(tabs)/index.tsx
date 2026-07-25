@@ -15,7 +15,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { setStatusBarStyle } from 'expo-status-bar';
 import * as Haptics from 'expo-haptics';
 import { useTranslation } from 'react-i18next';
-import { BrandMark, PresencePulse, Screen } from '@/components/ui';
+import { BrandMark, Screen } from '@/components/ui';
 import {
   colors,
   fonts,
@@ -34,8 +34,8 @@ const tidal = Easing.inOut(Easing.sin);
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 /**
- * Home is one native screen — no marketing scroll.
- * Brand · one practice · one CTA · one quiet secondary line.
+ * One native phone-height screen. No scroll. No sun/orb.
+ * Brand · practice · CTA (thumb zone) · two secondary hits.
  */
 export default function HoyScreen() {
   const insets = useSafeAreaInsets();
@@ -63,12 +63,8 @@ export default function HoyScreen() {
     setStatusBarStyle('light');
   }, []);
 
-  const secondaryLabel = todayAim?.text
-    ? todayAim.text
-    : t('home.setAim');
-  const closeLabel = todayReview
-    ? t('home.seeReview')
-    : t('home.eveningReview');
+  const secondaryLabel = todayAim?.text ? todayAim.text : t('home.setAim');
+  const closeLabel = todayReview ? t('home.seeReview') : t('home.eveningReview');
 
   return (
     <Screen>
@@ -76,8 +72,8 @@ export default function HoyScreen() {
         style={[
           styles.frame,
           {
-            paddingTop: insets.top + 16,
-            paddingBottom: Math.max(insets.bottom, 8) + 8,
+            paddingTop: insets.top + 12,
+            paddingBottom: Math.max(insets.bottom, 6) + 6,
           },
         ]}>
         <LinearGradient
@@ -87,15 +83,11 @@ export default function HoyScreen() {
         />
         <LinearGradient
           colors={[...gradients.heroSheen]}
-          locations={[0, 0.45, 1]}
-          start={{ x: 0.4, y: 1 }}
-          end={{ x: 0.6, y: 0.15 }}
+          locations={[0, 0.5, 1]}
+          start={{ x: 0.5, y: 1 }}
+          end={{ x: 0.5, y: 0 }}
           style={StyleSheet.absoluteFill}
         />
-
-        <View style={styles.flameWrap} pointerEvents="none">
-          <PresencePulse active={false} />
-        </View>
 
         <Animated.View
           entering={FadeIn.duration(motion.slow).easing(tidal)}
@@ -104,7 +96,7 @@ export default function HoyScreen() {
         </Animated.View>
 
         <Animated.View
-          entering={FadeInUp.delay(220).duration(motion.enter).easing(tidal)}
+          entering={FadeInUp.delay(200).duration(motion.enter).easing(tidal)}
           style={styles.center}>
           <Text style={styles.kicker}>
             {practicedToday
@@ -123,7 +115,7 @@ export default function HoyScreen() {
         </Animated.View>
 
         <Animated.View
-          entering={FadeInUp.delay(420).duration(motion.enter).easing(tidal)}
+          entering={FadeInUp.delay(380).duration(motion.enter).easing(tidal)}
           style={styles.bottom}>
           <AnimatedPressable
             onPressIn={() => {
@@ -163,6 +155,7 @@ export default function HoyScreen() {
           <View style={styles.secondaryRow}>
             <Pressable
               onPress={() => router.push('/aims')}
+              hitSlop={8}
               style={({ pressed }) => [
                 styles.secondaryHit,
                 pressed && { opacity: 0.7 },
@@ -177,6 +170,7 @@ export default function HoyScreen() {
 
             <Pressable
               onPress={() => router.push('/revision')}
+              hitSlop={8}
               style={({ pressed }) => [
                 styles.secondaryHit,
                 pressed && { opacity: 0.7 },
@@ -196,25 +190,19 @@ export default function HoyScreen() {
 const styles = StyleSheet.create({
   frame: {
     flex: 1,
+    width: '100%',
     paddingHorizontal: spacing.lg,
     justifyContent: 'space-between',
   },
-  flameWrap: {
-    position: 'absolute',
-    alignSelf: 'center',
-    left: '22%',
-    bottom: '28%',
-    width: 220,
-    height: 220,
-    opacity: 0.8,
-  },
   top: {
-    zIndex: 1,
+    flexShrink: 0,
   },
   center: {
-    zIndex: 1,
-    gap: 10,
+    flexGrow: 1,
     flexShrink: 1,
+    justifyContent: 'center',
+    gap: 10,
+    paddingVertical: spacing.md,
   },
   kicker: {
     fontFamily: fonts.uiMedium,
@@ -225,29 +213,28 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: fonts.display,
-    fontSize: 40,
-    lineHeight: 44,
+    fontSize: 38,
+    lineHeight: 42,
     color: colors.white,
     letterSpacing: 0.2,
   },
   body: {
     fontFamily: fonts.body,
-    fontSize: 16.5,
-    lineHeight: 26,
+    fontSize: 16,
+    lineHeight: 25,
     color: colors.whiteMuted,
     maxWidth: 300,
-    marginTop: 2,
   },
   meta: {
     fontFamily: fonts.ui,
     fontSize: type.meta.size,
     letterSpacing: type.meta.tracking,
     color: colors.whiteSoft,
-    marginTop: 4,
+    marginTop: 2,
   },
   bottom: {
-    zIndex: 1,
-    gap: 16,
+    flexShrink: 0,
+    gap: 14,
   },
   ctaShell: {
     borderRadius: radii.md,
@@ -257,10 +244,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   cta: {
-    minHeight: 56,
+    minHeight: 54,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 17,
+    paddingVertical: 16,
   },
   ctaHighlight: {
     position: 'absolute',
@@ -279,14 +266,15 @@ const styles = StyleSheet.create({
   secondaryRow: {
     flexDirection: 'row',
     alignItems: 'stretch',
+    minHeight: 48,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.lineSoft,
-    paddingTop: 14,
+    paddingTop: 12,
   },
   secondaryHit: {
     flex: 1,
     gap: 4,
-    paddingVertical: 2,
+    justifyContent: 'center',
   },
   secondaryDivider: {
     width: StyleSheet.hairlineWidth,

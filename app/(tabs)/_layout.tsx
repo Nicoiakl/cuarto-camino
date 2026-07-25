@@ -19,12 +19,16 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: colors.accentHot,
         tabBarInactiveTintColor: colors.muted,
+        sceneContainerStyle: {
+          flex: 1,
+          backgroundColor: colors.bg,
+        },
         tabBarStyle: {
           backgroundColor: colors.bgDeep,
           borderTopColor: colors.lineSoft,
-          height: 68,
-          paddingTop: 8,
-          paddingBottom: 10,
+          height: 64,
+          paddingTop: 6,
+          paddingBottom: 8,
         },
         tabBarLabelStyle: {
           fontFamily: fonts.uiMedium,
@@ -46,7 +50,7 @@ export default function TabLayout() {
           title: t('tabs.today'),
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="flame-outline" size={size} color={color} />
+            <Ionicons name="home-outline" size={size} color={color} />
           ),
         }}
       />

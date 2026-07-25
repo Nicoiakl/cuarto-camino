@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Body, Button, Chip, Screen, Section } from '@/components/ui';
+import { AppShell, Body, Button, Chip, Section } from '@/components/ui';
 import { colors, fonts, radii, spacing } from '@/constants/theme';
 import { useWork } from '@/context/WorkContext';
 import { formatFriendlyDateTime } from '@/lib/dates';
@@ -25,95 +25,86 @@ export default function StopsScreen() {
   };
 
   return (
-    <Screen>
-      <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}>
-        <Section title={t('stops.title')}>
-          <Body>{t('stops.intro')}</Body>
-        </Section>
+    <AppShell>
+      <Section title={t('stops.title')}>
+        <Body>{t('stops.intro')}</Body>
+      </Section>
 
-        <Section title={t('stops.status')}>
-          <View style={styles.row}>
-            <Chip
-              label={stopSettings.enabled ? t('stops.active') : t('stops.paused')}
-              selected={stopSettings.enabled}
-              onPress={() =>
-                stopSettings.enabled
-                  ? updateStopSettings({ enabled: false })
-                  : enable()
-              }
-            />
-            <Chip
-              label={!stopSettings.enabled ? t('stops.enable') : t('stops.pause')}
-              selected={!stopSettings.enabled}
-              onPress={() =>
-                stopSettings.enabled
-                  ? updateStopSettings({ enabled: false })
-                  : enable()
-              }
-            />
-          </View>
-          {Platform.OS === 'web' ? (
-            <Body muted>{t('stops.webNote')}</Body>
-          ) : (
-            <Body muted>
-              {t('stops.scheduleNote', {
-                start: stopSettings.startHour,
-                end: stopSettings.endHour,
-                minutes: stopSettings.intervalMinutes,
-              })}
-            </Body>
-          )}
-        </Section>
-
-        <Section title={t('stops.interval')}>
-          <View style={styles.row}>
-            {INTERVALS.map((m) => (
-              <Chip
-                key={m}
-                label={t('stops.minutes', { count: m })}
-                selected={stopSettings.intervalMinutes === m}
-                onPress={() => updateStopSettings({ intervalMinutes: m })}
-              />
-            ))}
-          </View>
-        </Section>
-
-        <Section title={t('stops.now')}>
-          <Button label={t('stops.wasPresent')} onPress={() => logStop(true)} />
-          <Button
-            label={t('stops.noticedLate')}
-            variant="ghost"
-            onPress={() => logStop(false)}
+      <Section title={t('stops.status')}>
+        <View style={styles.row}>
+          <Chip
+            label={stopSettings.enabled ? t('stops.active') : t('stops.paused')}
+            selected={stopSettings.enabled}
+            onPress={() =>
+              stopSettings.enabled
+                ? updateStopSettings({ enabled: false })
+                : enable()
+            }
           />
-        </Section>
+          <Chip
+            label={!stopSettings.enabled ? t('stops.enable') : t('stops.pause')}
+            selected={!stopSettings.enabled}
+            onPress={() =>
+              stopSettings.enabled
+                ? updateStopSettings({ enabled: false })
+                : enable()
+            }
+          />
+        </View>
+        {Platform.OS === 'web' ? (
+          <Body muted>{t('stops.webNote')}</Body>
+        ) : (
+          <Body muted>
+            {t('stops.scheduleNote', {
+              start: stopSettings.startHour,
+              end: stopSettings.endHour,
+              minutes: stopSettings.intervalMinutes,
+            })}
+          </Body>
+        )}
+      </Section>
 
-        <Section title={t('stops.recent')}>
-          {stopLogs.length === 0 ? (
-            <Body muted>{t('stops.empty')}</Body>
-          ) : (
-            stopLogs.slice(0, 12).map((s) => (
-              <View key={s.id} style={styles.log}>
-                <Text style={styles.logTime}>{formatFriendlyDateTime(s.at)}</Text>
-                <Text style={styles.logState}>
-                  {s.remembered ? t('stops.presence') : t('stops.missed')}
-                </Text>
-              </View>
-            ))
-          )}
-        </Section>
-      </ScrollView>
-    </Screen>
+      <Section title={t('stops.interval')}>
+        <View style={styles.row}>
+          {INTERVALS.map((m) => (
+            <Chip
+              key={m}
+              label={t('stops.minutes', { count: m })}
+              selected={stopSettings.intervalMinutes === m}
+              onPress={() => updateStopSettings({ intervalMinutes: m })}
+            />
+          ))}
+        </View>
+      </Section>
+
+      <Section title={t('stops.now')}>
+        <Button label={t('stops.wasPresent')} onPress={() => logStop(true)} />
+        <Button
+          label={t('stops.noticedLate')}
+          variant="ghost"
+          onPress={() => logStop(false)}
+        />
+      </Section>
+
+      <Section title={t('stops.recent')}>
+        {stopLogs.length === 0 ? (
+          <Body muted>{t('stops.empty')}</Body>
+        ) : (
+          stopLogs.slice(0, 12).map((s) => (
+            <View key={s.id} style={styles.log}>
+              <Text style={styles.logTime}>{formatFriendlyDateTime(s.at)}</Text>
+              <Text style={styles.logState}>
+                {s.remembered ? t('stops.presence') : t('stops.missed')}
+              </Text>
+            </View>
+          ))
+        )}
+      </Section>
+    </AppShell>
   );
 }
 
 const styles = StyleSheet.create({
-  content: {
-    padding: spacing.lg,
-    paddingBottom: 48,
-    gap: 4,
-  },
   row: {
     flexDirection: 'row',
     flexWrap: 'wrap',

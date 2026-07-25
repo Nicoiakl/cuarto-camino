@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import {
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -84,12 +85,10 @@ function Atmosphere({ mode }: { mode: 'day' | 'session' }) {
         end={{ x: 0.5, y: 0.2 }}
         style={StyleSheet.absoluteFill}
       />
-      {/* One flame only — the whole night gathers around it */}
-      <MistOrb
-        style={session ? styles.flameCore : styles.flameSoft}
-        duration={motion.breath}
-        drift={6}
-      />
+      {/* Flame only inside practice — never as a “sun” on home */}
+      {session ? (
+        <MistOrb style={styles.flameCore} duration={motion.breath} drift={6} />
+      ) : null}
     </>
   );
 }
@@ -111,8 +110,40 @@ export function Screen({
         style,
       ]}>
       <Atmosphere mode={mode} />
-      {children}
+      <View style={styles.screenBody}>{children}</View>
     </View>
+  );
+}
+
+/** Same phone-height shell for every tab — fill viewport, optional scroll */
+export function AppShell({
+  children,
+  scroll = true,
+  contentStyle,
+}: {
+  children: React.ReactNode;
+  scroll?: boolean;
+  contentStyle?: ViewStyle;
+}) {
+  if (!scroll) {
+    return (
+      <Screen>
+        <View style={[styles.shellFill, contentStyle]}>{children}</View>
+      </Screen>
+    );
+  }
+
+  return (
+    <Screen>
+      <ScrollView
+        style={styles.shellFill}
+        contentContainerStyle={[styles.shellScrollContent, contentStyle]}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        showsVerticalScrollIndicator={false}>
+        {children}
+      </ScrollView>
+    </Screen>
   );
 }
 
@@ -425,16 +456,19 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: colors.bg,
+    overflow: 'hidden',
   },
-  flameSoft: {
-    position: 'absolute',
-    bottom: '12%',
-    alignSelf: 'center',
-    left: '28%',
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: 'rgba(240, 184, 120, 0.14)',
+  screenBody: {
+    flex: 1,
+  },
+  shellFill: {
+    flex: 1,
+  },
+  shellScrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.xxl,
   },
   flameCore: {
     position: 'absolute',
