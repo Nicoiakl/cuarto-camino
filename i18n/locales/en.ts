@@ -22,11 +22,12 @@ const en = {
   home: {
     remember: 'Remember',
     rememberHint: 'a moment of presence',
+    roomWhisper: 'Here. Unhurried.',
     practiceKicker: "Today's practice",
     practiceDoneKicker: 'Practiced today',
     practiceMeta: '{{minutes}} min · unhurried',
     practiceStart: 'Enter',
-    practiceAgain: 'Enter again',
+    practiceAgain: 'Again',
     aimToday: "Today's aim",
     noAim: 'No aim yet. The Work asks for a concrete direction.',
     reviewAim: 'Review aim',

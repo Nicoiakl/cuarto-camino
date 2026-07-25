@@ -34,19 +34,18 @@ export default function TabLayout() {
     <Tabs
       key={i18n.language}
       screenOptions={{
-        tabBarActiveTintColor: colors.accentHot,
-        tabBarInactiveTintColor: colors.muted,
+        tabBarActiveTintColor: 'rgba(240, 184, 120, 0.85)',
+        tabBarInactiveTintColor: 'rgba(237, 230, 220, 0.28)',
+        tabBarShowLabel: false,
         tabBarStyle: {
-          backgroundColor: colors.bgDeep,
-          borderTopColor: colors.lineSoft,
-          height: 64,
-          paddingTop: 6,
-          paddingBottom: 8,
+          backgroundColor: '#050607',
+          borderTopColor: 'rgba(237, 230, 220, 0.06)',
+          height: 56,
+          paddingTop: 8,
+          paddingBottom: 10,
         },
-        tabBarLabelStyle: {
-          fontFamily: fonts.uiMedium,
-          fontSize: 10,
-          letterSpacing: 0.4,
+        tabBarIconStyle: {
+          marginTop: 2,
         },
         headerStyle: { backgroundColor: colors.bg },
         headerTintColor: colors.ink,
@@ -63,7 +62,7 @@ export default function TabLayout() {
           title: t('tabs.today'),
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" size={size} color={color} />
+            <Ionicons name="ellipse-outline" size={size - 4} color={color} />
           ),
         }}
       />
@@ -72,7 +71,7 @@ export default function TabLayout() {
         options={{
           title: t('tabs.stops'),
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="notifications-outline" size={size} color={color} />
+            <Ionicons name="notifications-outline" size={size - 2} color={color} />
           ),
         }}
       />
@@ -81,7 +80,7 @@ export default function TabLayout() {
         options={{
           title: t('tabs.observe'),
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="eye-outline" size={size} color={color} />
+            <Ionicons name="eye-outline" size={size - 2} color={color} />
           ),
         }}
       />
@@ -90,7 +89,7 @@ export default function TabLayout() {
         options={{
           title: t('tabs.aim'),
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="locate-outline" size={size} color={color} />
+            <Ionicons name="locate-outline" size={size - 2} color={color} />
           ),
         }}
       />
@@ -99,7 +98,7 @@ export default function TabLayout() {
         options={{
           title: t('tabs.more'),
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="ellipsis-horizontal-circle-outline" size={size} color={color} />
+            <Ionicons name="ellipsis-horizontal" size={size - 2} color={color} />
           ),
         }}
       />

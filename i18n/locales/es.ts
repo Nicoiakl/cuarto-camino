@@ -24,11 +24,12 @@ const es: TranslationSchema = {
   home: {
     remember: 'Recuérdate',
     rememberHint: 'un momento de presencia',
+    roomWhisper: 'Aquí. Sin prisa.',
     practiceKicker: 'Práctica de hoy',
     practiceDoneKicker: 'Ya practicaste hoy',
     practiceMeta: '{{minutes}} min · con calma',
     practiceStart: 'Entrar',
-    practiceAgain: 'Volver a entrar',
+    practiceAgain: 'Otra vez',
     aimToday: 'Aim de hoy',
     noAim: 'Aún no hay aim. El Trabajo pide una dirección concreta.',
     reviewAim: 'Revisar aim',

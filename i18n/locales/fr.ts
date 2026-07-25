@@ -24,6 +24,7 @@ const fr: TranslationSchema = {
   home: {
     remember: 'Souviens-toi',
     rememberHint: "un instant de présence",
+    roomWhisper: 'Ici. Sans hâte.',
     practiceKicker: "Today's practice",
     practiceDoneKicker: 'Practiced today',
     practiceMeta: '{{minutes}} min · guided ritual',
