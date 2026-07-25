@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Alert, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { AppShell, Body, Button, Chip, Field, Section } from '@/components/ui';
+import { Body, Button, Chip, Field, FormShell, Section } from '@/components/ui';
 import { colors, fonts, radii, spacing } from '@/constants/theme';
 import { useWork } from '@/context/WorkContext';
 import { CENTERS, type Center } from '@/lib/types';
@@ -52,7 +52,14 @@ export default function ObservarScreen() {
   };
 
   return (
-    <AppShell>
+    <FormShell
+      footer={
+        <Button
+          label={t('observe.save')}
+          onPress={save}
+          disabled={!body.trim()}
+        />
+      }>
       <Section title={t('observe.title')}>
         <Body>{t('observe.intro')}</Body>
       </Section>
@@ -93,11 +100,6 @@ export default function ObservarScreen() {
             onPress={() => setIdentified(false)}
           />
         </View>
-        <Button
-          label={t('observe.save')}
-          onPress={save}
-          disabled={!body.trim()}
-        />
       </Section>
 
       <Section title={t('observe.journal')}>
@@ -125,7 +127,7 @@ export default function ObservarScreen() {
           <Body muted>{t('observe.longPress')}</Body>
         ) : null}
       </Section>
-    </AppShell>
+    </FormShell>
   );
 }
 

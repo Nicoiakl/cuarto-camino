@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Body, Button, Field, Screen, Section } from '@/components/ui';
+import { AppShell, Body, Button, Field, Section } from '@/components/ui';
 import { colors, fonts, radii, spacing } from '@/constants/theme';
 import { usePremium } from '@/context/PremiumContext';
 import { useWork } from '@/context/WorkContext';
@@ -23,85 +23,78 @@ export default function PremiumScreen() {
   };
 
   return (
-    <Screen>
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Section title={t('premium.title')}>
-          <Text style={styles.plan}>
-            {isPremium ? t('premium.youArePremium') : t('premium.youAreFree')}
+    <AppShell>
+      <Section title={t('premium.title')}>
+        <Text style={styles.plan}>
+          {isPremium ? t('premium.youArePremium') : t('premium.youAreFree')}
+        </Text>
+        <Body>{t('premium.intro')}</Body>
+      </Section>
+
+      <Section title={t('premium.freeTitle')}>
+        {[
+          t('premium.free1'),
+          t('premium.free2'),
+          t('premium.free3'),
+          t('premium.free4'),
+        ].map((line) => (
+          <Text key={line} style={styles.bullet}>
+            · {line}
           </Text>
-          <Body>{t('premium.intro')}</Body>
-        </Section>
+        ))}
+      </Section>
 
-        <Section title={t('premium.freeTitle')}>
-          {[
-            t('premium.free1'),
-            t('premium.free2'),
-            t('premium.free3'),
-            t('premium.free4'),
-          ].map((line) => (
-            <Text key={line} style={styles.bullet}>
-              · {line}
-            </Text>
-          ))}
-        </Section>
+      <Section title={t('premium.premiumTitle')}>
+        {[
+          t('premium.prem1'),
+          t('premium.prem2'),
+          t('premium.prem3'),
+        ].map((line) => (
+          <View key={line} style={styles.premRow}>
+            <Text style={styles.premBullet}>★</Text>
+            <Text style={styles.premText}>{line}</Text>
+          </View>
+        ))}
+        <Body muted>{t('premium.storeNote')}</Body>
+        <Button
+          label={t('premium.ctaSoon')}
+          onPress={() => {
+            track('premium_cta_tap');
+            setMsg(t('premium.ctaSoonMsg'));
+          }}
+        />
+      </Section>
 
-        <Section title={t('premium.premiumTitle')}>
-          {[
-            t('premium.prem1'),
-            t('premium.prem2'),
-            t('premium.prem3'),
-          ].map((line) => (
-            <View key={line} style={styles.premRow}>
-              <Text style={styles.premBullet}>★</Text>
-              <Text style={styles.premText}>{line}</Text>
-            </View>
-          ))}
-          <Body muted>{t('premium.storeNote')}</Body>
+      <Section title={t('premium.devTitle')}>
+        <Body muted>{t('premium.devHint')}</Body>
+        <Field
+          value={code}
+          onChangeText={setCode}
+          autoCapitalize="characters"
+          autoCorrect={false}
+          placeholder="THEWORK-PREMIUM"
+        />
+        <Button label={t('premium.unlock')} onPress={tryUnlock} disabled={!code.trim()} />
+        {isPremium ? (
           <Button
-            label={t('premium.ctaSoon')}
-            onPress={() => {
-              track('premium_cta_tap');
-              setMsg(t('premium.ctaSoonMsg'));
+            label={t('premium.backToFree')}
+            variant="ghost"
+            onPress={async () => {
+              await setPlan('free');
+              track('premium_cleared');
+              setMsg(t('premium.cleared'));
             }}
           />
-        </Section>
+        ) : null}
+        {msg ? <Body muted>{msg}</Body> : null}
+      </Section>
 
-        <Section title={t('premium.devTitle')}>
-          <Body muted>{t('premium.devHint')}</Body>
-          <Field
-            value={code}
-            onChangeText={setCode}
-            autoCapitalize="characters"
-            autoCorrect={false}
-            placeholder="THEWORK-PREMIUM"
-          />
-          <Button label={t('premium.unlock')} onPress={tryUnlock} disabled={!code.trim()} />
-          {isPremium ? (
-            <Button
-              label={t('premium.backToFree')}
-              variant="ghost"
-              onPress={async () => {
-                await setPlan('free');
-                track('premium_cleared');
-                setMsg(t('premium.cleared'));
-              }}
-            />
-          ) : null}
-          {msg ? <Body muted>{msg}</Body> : null}
-        </Section>
-
-        <Button label={t('premium.close')} variant="ghost" onPress={() => router.back()} />
-      </ScrollView>
-    </Screen>
+      <Button label={t('premium.close')} variant="ghost" onPress={() => router.back()} />
+    </AppShell>
   );
 }
 
 const styles = StyleSheet.create({
-  content: {
-    padding: spacing.lg,
-    paddingBottom: 48,
-    gap: 4,
-  },
   plan: {
     fontFamily: fonts.display,
     fontSize: 28,

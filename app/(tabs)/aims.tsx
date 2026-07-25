@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Keyboard, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { AppShell, Body, Button, Field, Section } from '@/components/ui';
+import { Body, Button, Field, FormShell, Section } from '@/components/ui';
 import { colors, fonts, radii, spacing } from '@/constants/theme';
 import { useWork } from '@/context/WorkContext';
 import { formatDayLabel } from '@/lib/dates';
@@ -26,9 +26,7 @@ export default function AimsScreen() {
     return () => clearTimeout(id);
   }, [savedFlash]);
 
-  const history = aims
-    .filter((a) => a.id !== todayAim?.id)
-    .slice(0, 14);
+  const history = aims.filter((a) => a.id !== todayAim?.id).slice(0, 14);
   const examples = [t('aims.ex1'), t('aims.ex2'), t('aims.ex3')];
   const canSave = Boolean(text.trim());
   const isUnchanged =
@@ -43,7 +41,20 @@ export default function AimsScreen() {
   };
 
   return (
-    <AppShell>
+    <FormShell
+      footer={
+        <Button
+          label={
+            savedFlash
+              ? t('aims.saved')
+              : isUnchanged
+                ? t('aims.update')
+                : t('aims.save')
+          }
+          onPress={save}
+          disabled={!canSave}
+        />
+      }>
       <Section title={t('aims.title')}>
         <Body>{t('aims.intro')}</Body>
       </Section>
@@ -55,17 +66,6 @@ export default function AimsScreen() {
           placeholder={t('aims.placeholder')}
           multiline
           style={{ minHeight: 96, textAlignVertical: 'top' }}
-        />
-        <Button
-          label={
-            savedFlash
-              ? t('aims.saved')
-              : isUnchanged
-                ? t('aims.update')
-                : t('aims.save')
-          }
-          onPress={save}
-          disabled={!canSave}
         />
         {todayAim?.text ? (
           <View style={styles.savedBox}>
@@ -108,7 +108,7 @@ export default function AimsScreen() {
           ))
         )}
       </Section>
-    </AppShell>
+    </FormShell>
   );
 }
 

@@ -11,6 +11,7 @@ import {
   type TextStyle,
   type ViewStyle,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   Easing,
   FadeInDown,
@@ -143,6 +144,47 @@ export function AppShell({
         showsVerticalScrollIndicator={false}>
         {children}
       </ScrollView>
+    </Screen>
+  );
+}
+
+/**
+ * Form layout: scrollable body + sticky primary action in the thumb zone.
+ * `edged` = stack screen (needs home-indicator padding). Tabs sit above the tab bar.
+ */
+export function FormShell({
+  children,
+  footer,
+  edged = false,
+}: {
+  children: React.ReactNode;
+  footer: React.ReactNode;
+  edged?: boolean;
+}) {
+  const insets = useSafeAreaInsets();
+  return (
+    <Screen>
+      <View style={styles.shellFill}>
+        <ScrollView
+          style={styles.shellFill}
+          contentContainerStyle={styles.formScrollContent}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+          showsVerticalScrollIndicator={false}>
+          {children}
+        </ScrollView>
+        <View
+          style={[
+            styles.formFooter,
+            {
+              paddingBottom: edged
+                ? Math.max(insets.bottom, 12)
+                : spacing.md,
+            },
+          ]}>
+          {footer}
+        </View>
+      </View>
     </Screen>
   );
 }
@@ -470,6 +512,20 @@ const styles = StyleSheet.create({
     paddingTop: spacing.md,
     paddingBottom: spacing.xxl,
   },
+  formScrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.lg,
+  },
+  formFooter: {
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.sm,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.lineSoft,
+    backgroundColor: colors.bg,
+    gap: 10,
+  },
   flameCore: {
     position: 'absolute',
     bottom: '16%',
@@ -616,8 +672,10 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth * 2,
     borderColor: colors.line,
     backgroundColor: colors.surfaceRaised,
-    paddingHorizontal: 15,
-    paddingVertical: 11,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    minHeight: 44,
+    justifyContent: 'center',
     borderRadius: radii.sm,
   },
   chipSession: {

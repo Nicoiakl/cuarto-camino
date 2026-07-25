@@ -72,6 +72,7 @@ const en = {
       next: 'Continue',
       finish: 'Close the practice',
       breathe: 'Breathe once',
+      swipeHint: 'Swipe left · or tap continue',
     },
     checkout: {
       kicker: 'Verification',
@@ -339,6 +340,25 @@ const en = {
     notes: 'Night notes',
     placeholder: 'What you saw… what you want to remember tomorrow…',
     save: 'Save review',
+    saved: 'Saved',
+  },
+  onboarding: {
+    step: '{{current}} / {{total}}',
+    continue: 'Continue',
+    enter: 'Enter',
+    skip: 'Skip',
+    presence: {
+      title: 'This is not productivity',
+      body: 'It is a quiet place to return to yourself. A few living minutes are enough.',
+    },
+    notProductivity: {
+      title: 'One practice a day',
+      body: 'Enter, feel, leave. The rest — aim, observation, review — is one tap away.',
+    },
+    begin: {
+      title: 'Like watching a fire',
+      body: 'No hurry. No correcting yourself too soon. Only presence.',
+    },
   },
   quotes: {
     title: 'Words for the Work',

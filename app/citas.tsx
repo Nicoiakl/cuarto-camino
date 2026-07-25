@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Body, Screen, Section } from '@/components/ui';
+import { AppShell, Body, Section } from '@/components/ui';
 import { colors, fonts, radii, spacing } from '@/constants/theme';
 import { useWork } from '@/context/WorkContext';
 import { QUOTES, quoteSource, quoteText, quoteThemeLabel } from '@/lib/quotes';
@@ -15,36 +15,30 @@ export default function CitasScreen() {
   }, [track]);
 
   return (
-    <Screen>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Section title={t('quotes.title')}>
-          <Body muted>{t('quotes.intro')}</Body>
-        </Section>
+    <AppShell>
+      <Section title={t('quotes.title')}>
+        <Body muted>{t('quotes.intro')}</Body>
+      </Section>
 
-        {QUOTES.map((q) => (
-          <Pressable
-            key={q.id}
-            onPress={() => track('quote_opened', { id: q.id, theme: q.theme })}
-            style={styles.card}>
-            <Text style={styles.quote}>“{quoteText(q.id)}”</Text>
-            <Text style={styles.source}>{quoteSource()}</Text>
-            <View style={styles.tag}>
-              <Text style={styles.tagText}>{quoteThemeLabel(q.theme)}</Text>
-            </View>
-          </Pressable>
-        ))}
-      </ScrollView>
-    </Screen>
+      {QUOTES.map((q) => (
+        <Pressable
+          key={q.id}
+          onPress={() => track('quote_opened', { id: q.id, theme: q.theme })}
+          style={styles.card}>
+          <Text style={styles.quote}>“{quoteText(q.id)}”</Text>
+          <Text style={styles.source}>{quoteSource()}</Text>
+          <View style={styles.tag}>
+            <Text style={styles.tagText}>{quoteThemeLabel(q.theme)}</Text>
+          </View>
+        </Pressable>
+      ))}
+    </AppShell>
   );
 }
 
 const styles = StyleSheet.create({
-  content: {
-    padding: spacing.lg,
-    paddingBottom: 48,
-    gap: 12,
-  },
   card: {
+    marginBottom: 12,
     backgroundColor: colors.surface,
     borderRadius: radii.lg,
     borderWidth: 1,

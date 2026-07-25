@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
@@ -144,6 +144,7 @@ export default function PracticaScreen() {
 
   const startGuide = () => {
     if (stateIdx == null || centerIdx == null) return;
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
     track('practice_checkin', {
       state: states[stateIdx],
       center: centers[centerIdx],
@@ -160,6 +161,21 @@ export default function PracticaScreen() {
     }
     setPhase('checkout');
   };
+
+  const nextStepRef = useRef(nextStep);
+  nextStepRef.current = nextStep;
+
+  const swipe = useMemo(
+    () =>
+      PanResponder.create({
+        onMoveShouldSetPanResponder: (_, g) =>
+          Math.abs(g.dx) > 24 && Math.abs(g.dx) > Math.abs(g.dy),
+        onPanResponderRelease: (_, g) => {
+          if (g.dx < -56) nextStepRef.current();
+        },
+      }),
+    [],
+  );
 
   const finish = () => {
     if (presence) logStop(true);
@@ -254,38 +270,43 @@ export default function PracticaScreen() {
         ) : null}
 
         {phase === 'guide' && current ? (
-          <Animated.View
-            key={step}
-            entering={FadeInUp.duration(900).easing(tidal)}
-            style={styles.phase}>
-            <ProgressBar value={progress} />
-            <Text style={styles.sessionKicker}>
-              {t('practice.guide.step', {
-                current: step + 1,
-                total: practice.steps.length,
-              })}
-            </Text>
-            <Headline light>{t(current.titleKey)}</Headline>
-            <Body light style={styles.guideBody}>
-              {t(current.bodyKey)}
-            </Body>
-            {current.breath ? (
-              <BreathBeacon label={t('practice.guide.breathe')} />
-            ) : (
-              <View style={styles.focusDot} />
-            )}
-            <View style={styles.footer}>
-              <Button
-                label={
-                  step < practice.steps.length - 1
-                    ? t('practice.guide.next')
-                    : t('practice.guide.finish')
-                }
-                variant="lumen"
-                onPress={nextStep}
-              />
-            </View>
-          </Animated.View>
+          <View style={styles.phase} {...swipe.panHandlers}>
+            <Animated.View
+              key={step}
+              entering={FadeInUp.duration(900).easing(tidal)}
+              style={styles.phase}>
+              <ProgressBar value={progress} />
+              <Text style={styles.sessionKicker}>
+                {t('practice.guide.step', {
+                  current: step + 1,
+                  total: practice.steps.length,
+                })}
+              </Text>
+              <Headline light style={styles.guideTitle}>
+                {t(current.titleKey)}
+              </Headline>
+              <Body light style={styles.guideBody}>
+                {t(current.bodyKey)}
+              </Body>
+              {current.breath ? (
+                <BreathBeacon label={t('practice.guide.breathe')} />
+              ) : (
+                <View style={styles.focusDot} />
+              )}
+              <Text style={styles.swipeHint}>{t('practice.guide.swipeHint')}</Text>
+              <View style={styles.footer}>
+                <Button
+                  label={
+                    step < practice.steps.length - 1
+                      ? t('practice.guide.next')
+                      : t('practice.guide.finish')
+                  }
+                  variant="lumen"
+                  onPress={nextStep}
+                />
+              </View>
+            </Animated.View>
+          </View>
         ) : null}
 
         {phase === 'checkout' ? (
@@ -429,9 +450,22 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accentHot,
     borderRadius: 1,
   },
+  guideTitle: {
+    fontSize: 38,
+    lineHeight: 44,
+  },
   guideBody: {
-    fontSize: type.bodyLg.size,
-    lineHeight: type.bodyLg.line,
+    fontSize: 20,
+    lineHeight: 32,
+  },
+  swipeHint: {
+    marginTop: 'auto',
+    fontFamily: fonts.ui,
+    fontSize: 12,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    color: colors.whiteSoft,
+    textAlign: 'center',
   },
   breathWrap: {
     alignSelf: 'center',

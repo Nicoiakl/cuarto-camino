@@ -1,17 +1,34 @@
-import { useEffect } from 'react';
-import { Tabs } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Tabs, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { colors, fonts } from '@/constants/theme';
 import { useWork } from '@/context/WorkContext';
+import { hasSeenOnboarding } from '@/lib/onboarding';
 
 export default function TabLayout() {
   const { track } = useWork();
   const { t, i18n } = useTranslation();
+  const router = useRouter();
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     track('app_open');
   }, [track]);
+
+  useEffect(() => {
+    let alive = true;
+    hasSeenOnboarding().then((seen) => {
+      if (!alive) return;
+      if (!seen) router.replace('/onboarding');
+      setReady(true);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [router]);
+
+  if (!ready) return null;
 
   return (
     <Tabs

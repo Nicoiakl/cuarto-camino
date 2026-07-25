@@ -93,6 +93,10 @@ function RootStack() {
         animation: 'fade',
       }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="onboarding"
+        options={{ headerShown: false, animation: 'fade' }}
+      />
       <Stack.Screen name="revision" options={{ title: t('screens.revision') }} />
       <Stack.Screen name="citas" options={{ title: t('screens.quotes') }} />
       <Stack.Screen name="uso" options={{ title: t('screens.usage') }} />

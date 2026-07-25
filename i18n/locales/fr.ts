@@ -73,7 +73,8 @@ const fr: TranslationSchema = {
       step: 'Step {{current}} of {{total}}',
       next: 'Continue',
       finish: 'Close the practice',
-      breathe: 'Breathe once',
+      breathe: 'Respire une fois',
+      swipeHint: 'Glisse vers la gauche · ou touche continuer',
     },
     checkout: {
       kicker: 'Verification',
@@ -236,6 +237,25 @@ const fr: TranslationSchema = {
     notes: 'Notes de la nuit',
     placeholder: 'Ce que tu as vu… ce que tu veux te rappeler demain…',
     save: 'Enregistrer la revue',
+    saved: 'Enregistrée',
+  },
+  onboarding: {
+    step: '{{current}} / {{total}}',
+    continue: 'Continuer',
+    enter: 'Entrer',
+    skip: 'Passer',
+    presence: {
+      title: 'Ce n’est pas de la productivité',
+      body: 'C’est un lieu tranquille pour revenir à soi. Quelques minutes vivantes suffisent.',
+    },
+    notProductivity: {
+      title: 'Une pratique par jour',
+      body: 'Entre, sens, sors. Le reste — aim, observation, revue — est à un toucher.',
+    },
+    begin: {
+      title: 'Comme regarder le feu',
+      body: 'Sans hâte. Sans te corriger trop tôt. Seulement la présence.',
+    },
   },
   quotes: {
     title: 'Paroles pour le Travail',

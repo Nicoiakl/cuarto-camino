@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Body, Button, Screen, Section } from '@/components/ui';
+import { AppShell, Body, Button, Section } from '@/components/ui';
 import { colors, fonts, radii, spacing } from '@/constants/theme';
 import { usePremium } from '@/context/PremiumContext';
 import { useWork } from '@/context/WorkContext';
@@ -45,51 +45,45 @@ export default function EstudioHubScreen() {
   ];
 
   return (
-    <Screen>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Section title={t('study.hubTitle')}>
-          <Body>{t('study.hubIntro')}</Body>
-          <Text style={styles.corpus}>{corpusSummary()}</Text>
-          <Body muted>
-            {!isPremium
-              ? t('study.aiNeedsPremium')
-              : hasKey
-                ? t('study.aiReady')
-                : t('study.aiLocal')}
-          </Body>
-          {!isPremium ? (
-            <Button
-              label={t('study.seePremium')}
-              variant="gold"
-              onPress={() => router.push('/premium')}
-            />
-          ) : null}
-        </Section>
+    <AppShell>
+      <Section title={t('study.hubTitle')}>
+        <Body>{t('study.hubIntro')}</Body>
+        <Text style={styles.corpus}>{corpusSummary()}</Text>
+        <Body muted>
+          {!isPremium
+            ? t('study.aiNeedsPremium')
+            : hasKey
+              ? t('study.aiReady')
+              : t('study.aiLocal')}
+        </Body>
+        {!isPremium ? (
+          <Button
+            label={t('study.seePremium')}
+            variant="gold"
+            onPress={() => router.push('/premium')}
+          />
+        ) : null}
+      </Section>
 
-        <Section title={t('study.enter')}>
-          {links.map((item) => (
-            <Pressable
-              key={item.href}
-              onPress={() => {
-                track('nav_estudio', { to: item.href });
-                router.push(item.href);
-              }}
-              style={({ pressed }) => [styles.link, pressed && { opacity: 0.85 }]}>
-              <Text style={styles.linkTitle}>{item.title}</Text>
-              <Text style={styles.linkDesc}>{item.desc}</Text>
-            </Pressable>
-          ))}
-        </Section>
-      </ScrollView>
-    </Screen>
+      <Section title={t('study.enter')}>
+        {links.map((item) => (
+          <Pressable
+            key={item.href}
+            onPress={() => {
+              track('nav_estudio', { to: item.href });
+              router.push(item.href);
+            }}
+            style={({ pressed }) => [styles.link, pressed && { opacity: 0.85 }]}>
+            <Text style={styles.linkTitle}>{item.title}</Text>
+            <Text style={styles.linkDesc}>{item.desc}</Text>
+          </Pressable>
+        ))}
+      </Section>
+    </AppShell>
   );
 }
 
 const styles = StyleSheet.create({
-  content: {
-    padding: spacing.lg,
-    paddingBottom: 48,
-  },
   corpus: {
     fontFamily: fonts.body,
     fontSize: 13,

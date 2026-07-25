@@ -74,6 +74,7 @@ const es: TranslationSchema = {
       next: 'Continuar',
       finish: 'Cerrar la práctica',
       breathe: 'Respira una vez',
+      swipeHint: 'Deslizá hacia la izquierda · o tocá continuar',
     },
     checkout: {
       kicker: 'Verificación',
@@ -236,6 +237,25 @@ const es: TranslationSchema = {
     notes: 'Notas de la noche',
     placeholder: 'Lo que viste… lo que quieres recordar mañana…',
     save: 'Guardar revisión',
+    saved: 'Guardada',
+  },
+  onboarding: {
+    step: '{{current}} / {{total}}',
+    continue: 'Seguir',
+    enter: 'Entrar',
+    skip: 'Saltar',
+    presence: {
+      title: 'Esto no es productividad',
+      body: 'Es un lugar quieto para volver a ti. Unos minutos bastan si están vivos.',
+    },
+    notProductivity: {
+      title: 'Una práctica al día',
+      body: 'Entrá, sentí, salí. El resto —aim, observación, revisión— está a un toque.',
+    },
+    begin: {
+      title: 'Como mirar el fuego',
+      body: 'Sin prisa. Sin corregirte demasiado pronto. Solo presencia.',
+    },
   },
   quotes: {
     title: 'Palabras para el Trabajo',
