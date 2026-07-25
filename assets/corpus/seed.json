@@ -1,0 +1,205 @@
+{
+  "version": 1,
+  "count": 24,
+  "books": [
+    {
+      "id": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work"
+    }
+  ],
+  "chunks": [
+    {
+      "id": "seed-1",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 1,
+      "text": "Self-remembering is the practice of being present to oneself while life continues. It is not thinking about oneself, and not escaping the moment. It is a simultaneous awareness: I am here, and this is happening."
+    },
+    {
+      "id": "seed-2",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 2,
+      "text": "Self-observation begins without trying to change what is seen. First see. See the centers, the postures, the voices that say “I”. Judgment comes later and often spoils the seeing."
+    },
+    {
+      "id": "seed-3",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 3,
+      "text": "We are a multiplicity. Many “I”s take turns speaking as if they were one person. An aim helps a more conscious “I” to remember its place when another “I” wants the stage."
+    },
+    {
+      "id": "seed-4",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 4,
+      "text": "Identification is when attention is swallowed by something — a thought, a person, a worry, a phone. In identification there is little free attention left for presence."
+    },
+    {
+      "id": "seed-5",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 5,
+      "text": "The intellectual center thinks, compares, plans, and narrates. It often claims to be the whole person. Observation asks: is this thinking, or am I being thought?"
+    },
+    {
+      "id": "seed-6",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 6,
+      "text": "The emotional center likes and dislikes, hopes and fears, praises and blames. Strong emotion can steal the sense of “I”. The Work asks for feeling without drowning."
+    },
+    {
+      "id": "seed-7",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 7,
+      "text": "The moving center governs gesture, habit, walking, craft. Much of life runs here automatically. A stop can reveal how the body continues a story the mind has not chosen."
+    },
+    {
+      "id": "seed-8",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 8,
+      "text": "An aim in the Work is concrete, possible, and related to being — not a vague wish to be better. Small aims, kept sincerely, educate attention more than grand resolutions."
+    },
+    {
+      "id": "seed-9",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 9,
+      "text": "Man cannot do, in the sense that most action is mechanical consequence. Seeing this is not despair; it is the beginning of a different kind of effort — conscious effort."
+    },
+    {
+      "id": "seed-10",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 10,
+      "text": "Essence and personality are distinguished in the teaching: what is born in us, and what is acquired. The Work studies both without romance and without contempt."
+    },
+    {
+      "id": "seed-11",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 11,
+      "text": "Buffers are inner mechanisms that prevent us from seeing contradictions. When two “I”s conflict, a buffer can make us feel consistent. Observation softens buffers slowly."
+    },
+    {
+      "id": "seed-12",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 12,
+      "text": "Conscious labor and intentional suffering point to efforts that are not for vanity: staying with discomfort for the sake of seeing, keeping an aim when sleep pulls harder."
+    },
+    {
+      "id": "seed-13",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 13,
+      "text": "A stop exercise interrupts the stream. For a moment: freeze the posture of body, feeling, and thought enough to ask — where am I? Who is here?"
+    },
+    {
+      "id": "seed-14",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 14,
+      "text": "The Fourth Way is work in life. Monastery, fakir, and yogi paths separate conditions; this way uses ordinary life as the material of study — family, work, friction, time."
+    },
+    {
+      "id": "seed-15",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 15,
+      "text": "Verification matters. Do not believe. Test ideas against experience. The teaching is a map; your observation is the territory you can actually walk."
+    },
+    {
+      "id": "seed-16",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 16,
+      "text": "Negative emotions are studied carefully: they consume energy and often pretend to be truth. The Work does not ask for fake positivity; it asks to see the emotion as energy in motion."
+    },
+    {
+      "id": "seed-17",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 17,
+      "text": "Attention is the currency of the Work. Where attention goes, a kind of life goes. Dividing attention — toward the outer event and toward oneself — is a practical training."
+    },
+    {
+      "id": "seed-18",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 18,
+      "text": "Considering (inner and outer) is losing force in imagined opinions of others, or in manipulating how we appear. Seeing considering is already a recovery of a little freedom."
+    },
+    {
+      "id": "seed-19",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 19,
+      "text": "Mechanicalness is not an insult; it is a diagnosis. Habits of thought, feeling, and movement repeat. The Work studies the machine in order to become less entirely mechanical."
+    },
+    {
+      "id": "seed-20",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 20,
+      "text": "Evening review is a gentle accounting: where was there a flash of remembrance? Where did an aim vanish? No courtroom — a laboratory notebook for being."
+    },
+    {
+      "id": "seed-21",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 21,
+      "text": "Questions that help: What center is active? Am I identified? Which “I” is speaking? Is there any free attention? What would remembering myself change in this exact second?"
+    },
+    {
+      "id": "seed-22",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 22,
+      "text": "A guide in the Work should not replace your seeing. Good help returns you to observation, aim, and verification — not to dependency on explanations."
+    },
+    {
+      "id": "seed-23",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 23,
+      "text": "Study of texts is useful when it feeds practice. Read little, digest, try in life. A paragraph verified in the street outweighs a chapter only admired in the chair."
+    },
+    {
+      "id": "seed-24",
+      "bookId": "seed-work",
+      "title": "The Work — study notes",
+      "author": "The Work",
+      "index": 24,
+      "text": "Presence is brief at first. That is normal. The Work values honest seconds over imaginary hours. Collect moments; do not invent a continuous saint."
+    }
+  ]
+}
